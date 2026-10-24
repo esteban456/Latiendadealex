@@ -1,0 +1,15 @@
+node_modules/
+.env
+.dev.vars
+data/catalog.json
+data/accounts.json
+data/orders.json
+data/leads.json
+data/mirror.json
+public/vendor/
+public/assets/img/productos/
+public/assets/img/productos-webp/
+scrape.log
+scrape.err
+.DS_Store
+Thumbs.db

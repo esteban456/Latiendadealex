@@ -1,0 +1,24 @@
+﻿
+removed 6 packages, changed 2 packages, and audited 88 packages in 2s
+
+19 packages are looking for funding
+  run `npm fund` for details
+
+8 vulnerabilities (5 moderate, 3 high)
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+npm.cmd : npm warn install-scripts 3 packages have install scripts not yet covered by allowScripts:
+En línea: 1 Carácter: 223
++ ... .json', JSON.stringify(p,null,2)+'\n')"; npm.cmd install 2>&1 | Out-F ...
++                                              ~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (npm warn instal...y allowScripts::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+npm warn install-scripts   onnxruntime-node@1.21.0 (postinstall: node ./script/install)
+npm warn install-scripts   protobufjs@7.6.6 (postinstall: node scripts/postinstall)
+npm warn install-scripts   sharp@0.34.5 (install: node install/check.js || npm run build)
+npm warn install-scripts
+npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.

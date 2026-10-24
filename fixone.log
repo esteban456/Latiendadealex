@@ -1,0 +1,13 @@
+﻿node : 
+En línea: 1 Carácter: 60
++ ... s\Proyectos\Paginas\Paginas 9'; node scripts/fix-one.mjs 2>&1 | Out-F ...
++                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(process:4032): GLib-GObject-CRITICAL **: 17:52:27.396: value "32" of type 'gint' is invalid or out of range for 
+property 'space' of type 'VipsInterpretation'
+
+(process:4032): GLib-GObject-CRITICAL **: 17:52:33.467: value "32" of type 'gint' is invalid or out of range for 
+property 'space' of type 'VipsInterpretation'
+colourspace: parameter space not set

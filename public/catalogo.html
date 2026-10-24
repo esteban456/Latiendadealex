@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>try{if(localStorage.getItem("alx.theme")==="dark")document.documentElement.dataset.theme="dark"}catch{}</script>
+    <title>Catálogo | La Tienda de Alex</title>
+    <meta name="description" content="Explora más de 1.900 productos: celulares, laptops, audio, household y accesorios con envío a toda Colombia." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/design-refresh.css?v=20261017-darkfix" />
+    <link rel="stylesheet" href="assets/css/estructura.css?v=20261013-estructura" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>" />
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="wrap">
+        <span>🚚 Envíos a todo Colombia</span>
+        <span>💳 Hasta <b>12 cuotas</b> con Mercado Pago</span>
+        <span>🛡️ Garantía en todos los productos</span>
+        <span>📦 +1.900 productos</span>
+      </div>
+    </div>
+
+    <header class="header">
+      <div class="wrap">
+        <a class="logo" href="index.html">
+          <img src="icon.png" alt="" class="logo-img" />
+          <span>La Tienda de Alex<small>Tecnología para tu negocio</small></span>
+        </a>
+        <form class="search" id="search-form" role="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </svg>
+          <input type="search" name="q" placeholder="Busca celulares, accesorios..." aria-label="Buscar productos" autocomplete="off" enterkeyhint="search" autocapitalize="off" spellcheck="false" />
+          <div class="search-suggestions" data-suggestions hidden></div>
+        </form>
+        <div class="header-actions">
+          <a class="icon-btn" data-whatsapp href="https://wa.me/" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.05 21.8a9.87 9.87 0 0 1-5.04-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.89 9.89-9.89 2.64 0 5.12 1.03 6.99 2.9a9.83 9.83 0 0 1 2.89 6.99c0 5.45-4.43 9.89-9.88 9.89M12.05 0C5.46 0 .1 5.36.1 11.95c0 2.1.55 4.14 1.59 5.94L0 24l6.3-1.65a11.88 11.88 0 0 0 5.69 1.45c6.58 0 11.94-5.36 11.95-11.95 0-3.19-1.24-6.19-3.42-8.4Z" /></svg>
+          </a>
+          <a class="icon-btn" href="carrito.html" aria-label="Carrito de compras">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="20" r="1.5" />
+              <circle cx="18" cy="20" r="1.5" />
+              <path d="M2 3h3l2.4 12.2a2 2 0 0 0 2 1.6h8.5a2 2 0 0 0 2-1.6L22 7H6" />
+            </svg>
+            <span class="badge-count" data-cart-count hidden>0</span>
+          </a>
+        </div>
+      </div>
+      <nav class="wrap nav" data-nav aria-label="Categorias"></nav>
+    </header>
+
+    <p class="banner-demo" data-demo-banner hidden></p>
+
+    <div class="wrap">
+      <nav class="breadcrumb">
+        <a href="index.html">Inicio</a> / <span data-crumb>Catálogo</span>
+      </nav>
+
+      <div class="catalog">
+        <aside class="filters" data-filters>
+          <details class="mobile-filters-disclosure" data-mobile-filter-disclosure open>
+            <summary><span class="mobile-filters-title">Filtrar productos</span><span class="mobile-filters-subtitle">Categoría, marca y precio</span><span class="mobile-filters-chevron" aria-hidden="true">⌄</span></summary>
+            <div class="mobile-filters-content">
+
+          <div class="filters-head">
+            <h3>Filtros</h3>
+            <button class="link" id="f-clear">Limpiar</button>
+          </div>
+
+          <div class="filter-group">
+            <h4>Categoría</h4>
+            <div class="filter-list" data-filter-categories></div>
+          </div>
+
+          <div class="filter-group">
+            <h4>Marca</h4>
+            <div class="filter-list" data-filter-brands></div>
+          </div>
+
+          <div class="filter-group">
+            <h4>Precio</h4>
+            <div class="price-range">
+              <div class="price-inputs">
+                <input type="number" id="f-price-min" placeholder="Mín" min="0" />
+                <span>—</span>
+                <input type="number" id="f-price-max" placeholder="Máx" min="0" />
+              </div>
+              <input type="range" id="f-price" min="50000" max="8000000" step="50000" value="8000000" />
+              <div class="muted" style="font-size: 0.85rem">Hasta <b id="f-price-label">$ 8.000.000</b></div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <h4>Opciones</h4>
+            <label class="check"><input type="checkbox" id="f-stock" /> <span>Solo disponibles</span></label>
+            <label class="check"><input type="checkbox" id="f-shipping" /> <span>Envío gratis</span></label>
+            <label class="check"><input type="checkbox" id="f-offers" /> <span>Con descuento</span></label>
+          </div>
+                    </div>
+          </details>
+        </aside>
+
+        <main>
+          <!-- Ofertas del día -->
+          <section class="ml-section" data-deals-section>
+            <div class="ml-section-header">
+              <div class="ml-section-title">
+                <span class="icon">🔥</span>
+                Ofertas del día
+              </div>
+              <div class="ml-countdown">
+                Termina en:
+                <span class="time" data-countdown>00:00:00</span>
+              </div>
+            </div>
+            <div class="grid" data-deals-grid></div>
+          </section>
+
+          <!-- Más vendidos -->
+          <section class="ml-section" data-best-section>
+            <div class="ml-section-header">
+              <div class="ml-section-title">
+                <span class="icon">⭐</span>
+                Más vendidos
+              </div>
+            </div>
+            <div class="grid" data-best-grid></div>
+          </section>
+
+          <div class="chips" data-chips></div>
+
+          <div class="toolbar">
+            <div class="muted"><b data-count>0</b> productos encontrados</div>
+            <div class="toolbar-right">
+              <label class="muted" for="f-sort" style="font-size: 0.85rem">Ordenar:</label>
+              <select id="f-sort" style="width: auto">
+                <option value="relevancia">Relevancia</option>
+                <option value="precio-asc">Menor precio</option>
+                <option value="precio-desc">Mayor precio</option>
+                <option value="nombre">Nombre A-Z</option>
+                <option value="ventas">Más vendidos</option>
+                <option value="novedad">Novedades</option>
+              </select>
+              <div class="view-toggle" data-view-toggle>
+                <button class="view-btn active" data-view="grid" aria-label="Vista cuadrícula">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                </button>
+                <button class="view-btn" data-view="list" aria-label="Vista lista">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="4" width="18" height="3" rx="1"/><rect x="3" y="10.5" width="18" height="3" rx="1"/><rect x="3" y="17" width="18" height="3" rx="1"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid" data-results></div>
+          <div class="center" style="margin-top: 2rem">
+            <button class="btn btn-ghost" data-more hidden>Cargar más productos</button>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="wrap">
+        <div class="footer-grid">
+          <div>
+            <a class="logo" href="index.html" style="color: #fff">
+              <img src="icon.png" alt="" class="logo-img" />
+              <span>La Tienda de Alex<small style="color: #64748b">Tecnología para tu negocio</small></span>
+            </a>
+            <p style="font-size: 0.9rem; max-width: 32ch; margin-top: 0.8rem">
+              Distribuidora de tecnologia, household y accesorios con envio a todo Colombia.
+            </p>
+          </div>
+          <div>
+            <h4>Categorias</h4>
+            <ul data-footer-cats></ul>
+          </div>
+          <div>
+            <h4>Tu cuenta</h4>
+            <ul>
+              <li><a href="carrito.html">Mi carrito</a></li>
+              <li><a href="catalogo.html">Todo el catalogo</a></li>
+              <li><a data-whatsapp href="https://wa.me/" target="_blank" rel="noopener">Contactanos</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Ayuda</h4>
+            <ul>
+              <li>Envios y entregas</li>
+              <li>Garantias y devoluciones</li>
+              <li>Metodos de pago</li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>© <span data-year></span> La Tienda de Alex.</span>
+          <span>Hecho en Colombia 🇨🇴</span>
+        </div>
+      </div>
+    </footer>
+
+    <a class="wa" data-whatsapp href="https://wa.me/" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12.05 21.8a9.87 9.87 0 0 1-5.04-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.89 9.89-9.89 2.64 0 5.12 1.03 6.99 2.9a9.83 9.83 0 0 1 2.89 6.99c0 5.45-4.43 9.89-9.88 9.89M12.05 0C5.46 0 .1 5.36.1 11.95c0 2.1.55 4.14 1.59 5.94L0 24l6.3-1.65a11.88 11.88 0 0 0 5.69 1.45c6.58 0 11.94-5.36 11.95-11.95 0-3.19-1.24-6.19-3.42-8.4Z" /></svg>
+    </a>
+
+    <script type="module" src="assets/js/catalogo.js?v=20261009-search-theme"></script>
+  </body>
+</html>

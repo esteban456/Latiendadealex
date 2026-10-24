@@ -1,0 +1,39 @@
+{
+  "name": "tienda-de-alex",
+  "version": "1.0.0",
+  "private": true,
+  "description": "La Tienda de Alex - tienda online en HTML, CSS y JS con pago con Mercado Pago",
+  "type": "module",
+  "scripts": {
+    "dev": "node server/index.js",
+    "start": "node server/index.js",
+    "scrape": "node scripts/scrape.mjs",
+    "import:products-json": "node scripts/import-products-json.mjs",
+    "scrape:test": "node scripts/scrape.mjs --limit 40 --cat-pages 1 --out data/catalog.test.json",
+    "mirror": "node scripts/mirror-images.mjs",
+    "resolve": "node scripts/resolve-images.mjs",
+    "cloudflare:seed": "node scripts/export-cloudflare-seed.mjs",
+    "upload:catalogo": "node scripts/upload-catalogo-images.mjs",
+    "import:catalogo": "node scripts/import-catalogo.mjs",
+    "pricing": "node scripts/apply-pricing.mjs",
+    "check": "node scripts/check-links.mjs",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "google-auth-library": "^11.1.0"
+  },
+  "devDependencies": {
+    "@imgly/background-removal": "^1.7.0",
+    "@imgly/background-removal-node": "^1.4.5",
+    "sharp": "^0.35.5"
+  },
+  "overrides": {
+    "@imgly/background-removal-node": {
+      "sharp": "^0.34.5",
+      "onnxruntime-node": "1.21.0"
+    }
+  }
+}

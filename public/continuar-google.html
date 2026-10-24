@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>try{if(localStorage.getItem("alx.theme")==="dark")document.documentElement.dataset.theme="dark"}catch{}</script>
+    <meta name="description" content="Crea tu cuenta o inicia sesión en La Tienda de Alex." />
+    <title>Mi cuenta | La Tienda de Alex</title>
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="icon" href="icon.png" />
+    <style>
+      body { min-height: 100vh; display: grid; grid-template-rows: auto 1fr auto; background: #f5f6f7; }
+      .login-main { display: grid; place-items: center; padding: 48px 20px; }
+      .login-main { padding: 42px 20px; }
+      .account-shell { width: min(100%, 980px); display: grid; grid-template-columns: .85fr 1.15fr; overflow: hidden; border: 1px solid #e8e9eb; border-radius: 28px; background: #fff; box-shadow: 0 24px 70px #10182812; }
+      .account-aside { display: flex; flex-direction: column; justify-content: space-between; gap: 28px; padding: clamp(28px, 5vw, 52px); color: #fff; background: radial-gradient(circle at 15% 90%, #d94f2d 0, transparent 42%), #17221e; text-align: left; }
+      .account-aside img { width: 74px; height: 74px; padding: 8px; border-radius: 18px; background: #fff; object-fit: contain; }
+      .account-aside h1 { margin: 28px 0 12px; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.06em; }
+      .account-aside p { max-width: 32ch; margin: 0; color: #d9e1dc; line-height: 1.7; }
+      .account-benefits { display: grid; gap: 13px; margin-top: 28px; color: #e7eee9; font-size: .9rem; }
+      .account-panel { padding: clamp(24px, 4vw, 44px); text-align: left; }
+      .account-panel h2 { margin: 0 0 6px; font-size: 1.6rem; }
+      .account-panel > p { margin: 0 0 22px; color: #667085; }
+      .account-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 20px; padding: 5px; border-radius: 14px; background: #f1f3ef; }
+      .account-tab { min-height: 42px; border: 0; border-radius: 10px; background: transparent; color: #58635c; font-weight: 700; cursor: pointer; }
+      .account-tab.active { background: #fff; color: #17221e; box-shadow: 0 2px 8px #17221e12; }
+      .account-form { display: grid; gap: 11px; }
+      .account-form .field { margin: 0; text-align: left; }
+      .account-form .field label { color: #344054; }
+      .account-submit { width: 100%; min-height: 48px; margin-top: 5px; border: 0; border-radius: 12px; background: #dc542c; color: #fff; font-weight: 750; cursor: pointer; }
+      .account-submit:hover { background: #bd3f1d; }
+      .account-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: #8a938d; font-size: .78rem; }
+      .account-divider::before, .account-divider::after { content: ''; height: 1px; flex: 1; background: #e7eae5; }
+      .provider-list { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+      .provider-button { display: flex; align-items: center; justify-content: center; gap: 9px; min-height: 46px; padding: 8px 10px; border: 1px solid #dfe4df; border-radius: 12px; background: #fff; color: #202a25; font-weight: 700; cursor: pointer; }
+      .provider-button:hover { border-color: #aeb9b1; background: #fafbf9; }
+      .provider-button:disabled { opacity: .48; cursor: not-allowed; }
+      .provider-button svg { width: 19px; height: 19px; flex: none; }
+      .google-area { min-height: 46px; display: flex; justify-content: center; }
+      #google-button { grid-column: 1 / -1; }
+      .login-status { min-height: 24px; margin: 12px 0 0; color: #475467; font-size: .9rem; text-align: center; }
+      .login-status.error { color: #b42318; }
+      .login-status.success { color: #067647; }
+      .login-back { display: inline-block; margin-top: 20px; color: #344054; font-weight: 600; text-decoration: none; }
+      .login-back:hover { text-decoration: underline; }
+      .login-footer { padding: 20px; color: #667085; text-align: center; font-size: .85rem; }
+      .login-header { padding: 18px 24px; border-bottom: 1px solid #e8e9eb; background: #fff; }
+      .login-header a { display: inline-flex; align-items: center; gap: 10px; color: #111827; font-weight: 800; text-decoration: none; }
+    .login-header img { width: 38px; height: 38px; object-fit: contain; }
+    </style>
+    <link rel="stylesheet" href="assets/css/design-refresh.css?v=20261017-darkfix" />
+    <script type="module" src="assets/js/google-login.js?v=20261009-search-theme"></script>
+  </head>
+  <body>
+    <header class="login-header"><a href="index.html"><img src="icon.png" alt="" /> LA TIENDA DE ALEX</a></header>
+    <main class="login-main">
+      <section class="account-shell" aria-label="Acceso a tu cuenta">
+        <aside class="account-aside">
+          <div><img src="icon.png" alt="La Tienda de Alex" /><h1>Tu cuenta,<br />a tu manera.</h1><p>Guarda tus datos, consulta tus compras y encuentra todo lo que necesitas en un solo lugar.</p></div>
+          <div class="account-benefits"><span>✓ Compras más rápidas</span><span>✓ Tus pedidos siempre a la mano</span><span>✓ Atención directa por WhatsApp</span></div>
+        </aside>
+        <div class="account-panel">
+          <h2 id="login-title">Bienvenido</h2>
+          <p>Inicia sesión o crea una cuenta gratis.</p>
+          <div class="account-tabs" role="tablist" aria-label="Acceso o registro">
+            <button class="account-tab active" type="button" data-mode="login" role="tab" aria-selected="true">Iniciar sesión</button>
+            <button class="account-tab" type="button" data-mode="register" role="tab" aria-selected="false">Crear cuenta</button>
+          </div>
+          <form id="account-form" class="account-form">
+            <div class="field" id="name-field" hidden><label for="account-name">Nombre completo</label><input id="account-name" name="name" autocomplete="name" maxlength="100" /></div>
+            <div class="field"><label for="account-email">Correo electrónico</label><input id="account-email" name="email" type="email" autocomplete="email" required maxlength="160" /></div>
+            <div class="field"><label for="account-password">Contraseña</label><input id="account-password" name="password" type="password" autocomplete="current-password" minlength="10" required /></div>
+            <div class="field" id="confirm-field" hidden><label for="account-confirm">Confirmar contraseña</label><input id="account-confirm" name="confirm" type="password" autocomplete="new-password" minlength="10" /></div>
+            <button class="account-submit" id="account-submit" type="submit">Iniciar sesión</button>
+          </form>
+          <div class="account-divider">o continúa con</div>
+          <div class="provider-list">
+            <div class="google-area" id="google-button" aria-label="Continuar con Google"></div>
+            <button class="provider-button" type="button" data-provider="apple"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.77c.02 2.12 1.86 2.82 1.88 2.83-.02.05-.29 1-.96 1.98-.58.85-1.18 1.7-2.12 1.72-.92.02-1.22-.56-2.28-.56-1.05 0-1.38.54-2.25.58-.9.03-1.58-.93-2.17-1.78-1.2-1.74-2.12-4.92-.89-7.07.61-1.07 1.7-1.75 2.88-1.77.9-.02 1.75.61 2.3.61.54 0 1.56-.76 2.63-.65.45.02 1.72.18 2.54 1.38-.07.04-1.52.89-1.5 2.73ZM14.64 4.6c.48-.58.8-1.39.71-2.2-.69.03-1.52.46-2.02 1.04-.44.5-.83 1.32-.72 2.1.77.06 1.55-.39 2.03-.94Z"/></svg><span>Apple</span></button>
+            <button class="provider-button" type="button" data-provider="microsoft"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#f25022" d="M2 2h9v9H2z"/><path fill="#7fba00" d="M13 2h9v9h-9z"/><path fill="#00a4ef" d="M2 13h9v9H2z"/><path fill="#ffb900" d="M13 13h9v9h-9z"/></svg><span>Microsoft</span></button>
+          </div>
+          <p class="login-status" id="login-status" role="status" aria-live="polite"></p>
+          <a class="login-back" href="admin.html">Acceso al panel administrador</a>
+          <a class="login-back" href="index.html">← Volver a la tienda</a>
+        </div>
+      </section>
+    </main>
+    <footer class="login-footer">© <span id="year"></span> La Tienda de Alex</footer>
+  </body>
+</html>

@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>try{if(localStorage.getItem("alx.theme")==="dark")document.documentElement.dataset.theme="dark"}catch{}</script>
+    <title>La Tienda de Alex | Tecnología, Celulares y Accesorios en Cundinamarca</title>
+    <meta name="description" content="La Tienda de Alex: tecnología, celulares, accesorios y servicio técnico en Cundinamarca. Envíos seguros, garantía y pago con Mercado Pago." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/home.css" />
+    <link rel="stylesheet" href="assets/css/design-refresh.css?v=20261017-darkfix" />
+    <link rel="stylesheet" href="assets/css/estructura.css?v=20261013-estructura" />
+    <link rel="icon" href="icon.png" />
+  </head>
+  <body>
+    <!-- Barra de anuncios rotativa -->
+    <div class="announce-bar" data-announce-bar>
+      <div class="wrap announce-bar__inner">
+        <button class="announce-bar__arrow" data-announce-prev type="button" aria-label="Anuncio anterior">‹</button>
+        <div class="announce-bar__viewport">
+          <div class="announce-bar__slide is-active" data-announce-slide>
+            <span>🚚 <b>Envíos en Cundinamarca</b> — recibe en 2 a 3 días</span>
+          </div>
+          <div class="announce-bar__slide" data-announce-slide>
+            <span>💳 Compra segura con Mercado Pago · paga en cuotas</span>
+          </div>
+          <div class="announce-bar__slide" data-announce-slide>
+            <span>🛡️ Productos con garantía · <a href="#ofertas">Ver ofertas</a></span>
+          </div>
+        </div>
+        <div class="announce-bar__dots">
+          <button class="announce-bar__dot is-active" data-announce-dot type="button" aria-label="Ir al anuncio 1"></button>
+          <button class="announce-bar__dot" data-announce-dot type="button" aria-label="Ir al anuncio 2"></button>
+          <button class="announce-bar__dot" data-announce-dot type="button" aria-label="Ir al anuncio 3"></button>
+        </div>
+        <button class="announce-bar__arrow" data-announce-next type="button" aria-label="Anuncio siguiente">›</button>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+      <div class="wrap header-inner">
+        <button class="hamburger" data-menu-toggle aria-label="Menú">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18M3 12h18M3 18h18" />
+          </svg>
+        </button>
+
+        <a class="logo" href="index.html">
+          <img src="icon.png" alt="La Tienda de Alex" class="logo-img" />
+          <span class="logo-text">LA TIENDA DE ALEX</span>
+        </a>
+
+        <nav class="main-nav" data-nav-desktop>
+          <a href="index.html" class="active">Inicio</a>
+          <a href="catalogo.html">Tienda</a>
+          <a href="index.html#categorias">Categorías</a>
+          <a href="index.html#ofertas">Ofertas</a>
+          <a href="index.html#servicio-tecnico">Servicio técnico</a>
+        </nav>
+
+        <div class="header-actions">
+          <a class="icon-btn" href="#" data-search-open aria-label="Buscar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.5-3.5" />
+            </svg>
+          </a>
+          <a class="icon-btn" href="continuar-google.html" aria-label="Mi cuenta" data-account-icon>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+            </svg>
+          </a>
+          <a class="icon-btn cart-btn" href="carrito.html" aria-label="Carrito">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="20" r="1.5" />
+              <circle cx="18" cy="20" r="1.5" />
+              <path d="M2 3h3l2.4 12.2a2 2 0 0 0 2 1.6h8.5a2 2 0 0 0 2-1.6L22 7H6" />
+            </svg>
+            <span class="badge-count" data-cart-count hidden>0</span>
+          </a>
+        </div>
+      </div>
+      <!-- Mobile nav -->
+      <nav class="mobile-nav" data-nav-mobile hidden>
+        <a href="index.html" class="active">Inicio</a>
+        <a href="catalogo.html">Tienda</a>
+        <a href="index.html#categorias">Categorías</a>
+        <a href="index.html#ofertas">Ofertas</a>
+        <a href="index.html#servicio-tecnico">Servicio técnico</a>
+      </nav>
+      <!-- Mobile search bar -->
+      <div class="mobile-search" data-mobile-search hidden>
+        <form class="search" action="catalogo.html" method="get" role="search">
+          <input type="text" name="q" placeholder="Buscar productos..." autocomplete="off" />
+        </form>
+      </div>
+      <!-- Desktop nav row -->
+      <nav class="wrap nav" data-nav aria-label="Categorías"></nav>
+    </header>
+
+    <!-- Marquee de texto -->
+    <div class="marquee" data-marquee>
+      <div class="marquee__track">
+        <div class="marquee__group">
+          <span>🚚 Envíos en Cundinamarca</span>
+          <span>💳 Compra segura con Mercado Pago</span>
+          <span>🛡️ Productos con garantía</span>
+          <span>🛠️ Servicio técnico especializado</span>
+          <span>⚡ Ofertas que valen la pena</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="banner-demo" data-demo-banner hidden></p>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="wrap hero-inner">
+        <div class="hero-content">
+          <h1>TODO LO QUE NECESITAS.<br /><span class="hero-title-prefix">EN UN</span> <span class="hero-title-shift">SOLO LUGAR.</span></h1>
+          <div class="hero-mascot-wrap">
+          <img class="hero-mascot" src="assets/img/1.png" alt="Personaje de La Tienda de Alex" fetchpriority="high" />
+          </div>
+          <p>Tecnología, accesorios y soluciones para tu día a día.</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary btn-lg" href="catalogo.html">Comprar ahora →</a>
+            <a class="btn btn-outline btn-lg" href="#ofertas">Ver ofertas</a>
+          </div>
+        </div>
+        <div class="hero-visual" data-hero-products>
+          <!-- Productos reales cargados por JS -->
+        </div>
+      </div>
+    </section>
+
+    <section class="discovery-ribbon" aria-label="Cómo explorar la tienda">
+      <div class="discovery-orbit" aria-hidden="true"></div>
+      <div class="discovery-step"><span class="discovery-number">01</span><span><b>Explora</b><small>Encuentra algo para ti</small></span><i aria-hidden="true">↗</i></div>
+      <div class="discovery-step"><span class="discovery-number">02</span><span><b>Elige</b><small>Compara tus favoritos</small></span><i aria-hidden="true">✳</i></div>
+      <div class="discovery-step"><span class="discovery-number">03</span><span><b>Disfruta</b><small>Compra a tu manera</small></span><i aria-hidden="true">✓</i></div>
+    </section>
+    <!-- Promo del mes -->
+    <section class="section" id="destacados">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">⭐ Los favoritos de nuestros clientes</span>
+            <h2>PROMO DEL MES</h2>
+          </div>
+          <a class="link-more" href="catalogo.html">Ver más productos →</a>
+        </div>
+        <div class="grid grid--promo" data-featured>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Banner a ancho completo -->
+    <section class="promo-banner">
+      <img class="promo-banner__img" src="assets/img/plantilla.jpg" alt="" aria-hidden="true" loading="lazy" />
+      <div class="promo-banner__overlay" aria-hidden="true"></div>
+      <div class="promo-banner__inner">
+        <span class="eyebrow">Tecnología para tu día a día</span>
+        <h2>Renueva tu equipo sin gastar de más</h2>
+        <p>Celulares, computadores y accesorios con envío seguro y garantía en Cundinamarca.</p>
+        <div class="promo-banner__cta">
+          <a class="btn btn-primary btn-lg" href="catalogo.html">Ver el catálogo →</a>
+          <a class="btn btn-outline btn-lg" href="#ofertas">Ver ofertas</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categorías -->
+    <section class="section" id="categorias">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Explora la tienda</span>
+            <h2>Categorías</h2>
+          </div>
+          <a class="link-more" href="catalogo.html">Ver todo el catálogo →</a>
+        </div>
+        <div class="cat-grid">
+          <a class="cat-card" href="catalogo.html?c=Celulares+y+Smartphones">
+            <div class="cat-icon">📱</div>
+            <b>Celulares</b>
+            <span>Encuentra tu próximo teléfono.</span>
+          </a>
+          <a class="cat-card" href="catalogo.html?c=Computacion">
+            <div class="cat-icon">💻</div>
+            <b>Computación</b>
+            <span>Para estudiar, trabajar y crear.</span>
+          </a>
+          <a class="cat-card" href="catalogo.html?c=Audio+y+Microfonos">
+            <div class="cat-icon">🎧</div>
+            <b>Audio</b>
+            <span>Escucha como quieras.</span>
+          </a>
+          <a class="cat-card" href="catalogo.html?c=Gaming+y+Consolas">
+            <div class="cat-icon">🎮</div>
+            <b>Gaming</b>
+            <span>Equípate para jugar.</span>
+          </a>
+          <a class="cat-card" href="catalogo.html?c=Accesorios">
+            <div class="cat-icon">🔌</div>
+            <b>Accesorios</b>
+            <span>Pequeños detalles que hacen la diferencia.</span>
+          </a>
+          <a class="cat-card" href="#servicio-tecnico">
+            <div class="cat-icon">🛠️</div>
+            <b>Servicio técnico</b>
+            <span>Nosotros nos encargamos.</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ofertas del día -->
+    <section class="section section-offers" id="ofertas">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">⚡ Ofertas que valen la pena</span>
+            <h2>OFERTAS QUE VALEN LA PENA</h2>
+          </div>
+          <a class="link-more" href="catalogo.html?offers=1">Ver todas las ofertas →</a>
+        </div>
+        <div class="offers-layout">
+          <!-- Oferta principal -->
+          <div class="offer-main" data-offer-main>
+            <div class="skeleton" style="height: 380px"></div>
+          </div>
+          <!-- Ofertas secundarias -->
+          <div class="offers-side" data-offer-side>
+            <div class="skeleton" style="height: 120px"></div>
+            <div class="skeleton" style="height: 120px"></div>
+            <div class="skeleton" style="height: 120px"></div>
+            <div class="skeleton" style="height: 120px"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- El Diferencial -->
+    <section class="section section-differential">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">🧠 El diferencial</span>
+            <h2>¿No sabes qué comprar?</h2>
+            <p>Dinos qué necesitas y nosotros encontramos opciones para ti.</p>
+          </div>
+        </div>
+        <div class="differential">
+          <div class="diff-step">
+            <h4>¿Qué estás buscando?</h4>
+            <div class="diff-options" data-usage-options>
+              <button class="diff-btn" data-usage="gaming">🎮 Gaming</button>
+              <button class="diff-btn" data-usage="estudio">📚 Estudio</button>
+              <button class="diff-btn" data-usage="trabajo">💼 Trabajo</button>
+              <button class="diff-btn" data-usage="diario">📱 Uso diario</button>
+              <button class="diff-btn" data-usage="regalo">🎁 Un regalo</button>
+            </div>
+          </div>
+          <div class="diff-step">
+            <h4>¿Cuál es tu presupuesto?</h4>
+            <div class="diff-options" data-budget-options>
+              <button class="diff-btn" data-budget="50000">$50K</button>
+              <button class="diff-btn" data-budget="100000">$100K</button>
+              <button class="diff-btn" data-budget="200000">$200K</button>
+              <button class="diff-btn" data-budget="500000">$500K+</button>
+            </div>
+          </div>
+          <div class="diff-result" data-diff-result hidden>
+            <h4>Encontramos opciones para ti</h4>
+            <div class="diff-products" data-diff-products></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Alex Recomienda -->
+    <section class="section section-alex">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">🧑‍💻 Recomendados por Alex</span>
+            <h2>ALEX RECOMIENDA</h2>
+          </div>
+        </div>
+        <div class="alex-recommendation" data-alex-recommendation>
+          <div class="skeleton" style="height: 320px"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Servicio Técnico -->
+    <section class="section section-service" id="servicio-tecnico">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">🛠️ Servicio técnico</span>
+            <h2>¿Tu equipo tiene un problema?</h2>
+            <p>Nosotros te ayudamos.</p>
+          </div>
+        </div>
+        <div class="service-grid">
+          <button class="service-card" data-service="pantalla">
+            <div class="service-icon">📱</div>
+            <b>Pantalla rota</b>
+          </button>
+          <button class="service-card" data-service="bateria">
+            <div class="service-icon">🔋</div>
+            <b>No carga</b>
+          </button>
+          <button class="service-card" data-service="lento">
+            <div class="service-icon">🐌</div>
+            <b>Está lento</b>
+          </button>
+          <button class="service-card" data-service="no-enciende">
+            <div class="service-icon">💻</div>
+            <b>No enciende</b>
+          </button>
+          <button class="service-card" data-service="audio">
+            <div class="service-icon">🔊</div>
+            <b>Problemas de audio</b>
+          </button>
+          <button class="service-card" data-service="otro">
+            <div class="service-icon">❓</div>
+            <b>Otro problema</b>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Confianza -->
+    <section class="section section-trust" id="confianza">
+      <div class="wrap">
+        <h2 class="trust-title">Compra con tranquilidad</h2>
+        <div class="trust-grid">
+          <div class="trust-item">
+            <div class="trust-icon">🛡️</div>
+            <b>Compra segura</b>
+            <p>Tus pagos se procesan mediante Mercado Pago.</p>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon">📦</div>
+            <b>Envíos</b>
+            <p>Recibe tu pedido donde estés.</p>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon">💬</div>
+            <b>Atención personalizada</b>
+            <p>Estamos disponibles para ayudarte.</p>
+          </div>
+          <div class="trust-item">
+            <div class="trust-icon">🔄</div>
+            <b>Garantía</b>
+            <p>Soporte después de tu compra.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tienda Física -->
+    <section class="section section-store">
+      <div class="wrap">
+        <div class="store-grid">
+          <div class="store-info">
+            <span class="eyebrow">📍 ¿Prefieres visitarnos?</span>
+            <h2>Ven a conocer La Tienda de Alex</h2>
+            <p class="store-address">Carrera 7 # 10-42, El Rosal, Cundinamarca</p>
+            <div class="store-hours">
+              <b>Horario</b>
+              <p>Lunes — Sábado<br />8:00 AM — 7:00 PM</p>
+            </div>
+            <div class="store-actions">
+              <a class="btn btn-dark" href="https://maps.google.com/?q=Carrera+7+%23+10-42+El+Rosal+Cundinamarca" target="_blank" rel="noopener">Cómo llegar →</a>
+              <a class="btn btn-whatsapp" data-whatsapp href="https://wa.me/" target="_blank" rel="noopener">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.05 21.8a9.87 9.87 0 0 1-5.04-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.89 9.89-9.89 2.64 0 5.12 1.03 6.99 2.9a9.83 9.83 0 0 1 2.89 6.99c0 5.45-4.43 9.89-9.88 9.89M12.05 0C5.46 0 .1 5.36.1 11.95c0 2.1.55 4.14 1.59 5.94L0 24l6.3-1.65a11.88 11.88 0 0 0 5.69 1.45c6.58 0 11.94-5.36 11.95-11.95 0-3.19-1.24-6.19-3.42-8.4Z" /></svg>
+                Contactar por WhatsApp
+              </a>
+            </div>
+          </div>
+          <div class="store-map">
+            <iframe
+              src="https://www.google.com/maps?q=Carrera+7+%23+10-42+El+Rosal+Cundinamarca&output=embed"
+              width="100%"
+              height="300"
+              style="border:0; border-radius: 16px;"
+              allowfullscreen
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Preguntas frecuentes -->
+    <section class="section faq" id="preguntas">
+      <div class="wrap">
+        <div class="section-head faq-wrap">
+          <div>
+            <span class="eyebrow">💬 ¿Dudas? Te ayudamos</span>
+            <h2>PREGUNTAS FRECUENTES</h2>
+          </div>
+        </div>
+        <div class="faq-wrap">
+          <div class="accordion">
+            <details>
+              <summary>¿Hacen envíos a todo el país? <span class="faq-plus" aria-hidden="true">+</span></summary>
+              <p>Enviamos a todo el país y con entrega rápida en Cundinamarca. Si estás en El Rosal o municipios cercanos, puedes recibir tu pedido en 2 a 3 días.</p>
+            </details>
+            <details>
+              <summary>¿Qué medios de pago aceptan? <span class="faq-plus" aria-hidden="true">+</span></summary>
+              <p>Aceptamos pagos seguros con Mercado Pago, incluyendo tarjetas y pagos en cuotas. El pago se procesa de forma protegida durante el checkout.</p>
+            </details>
+            <details>
+              <summary>¿Los productos tienen garantía? <span class="faq-plus" aria-hidden="true">+</span></summary>
+              <p>Sí. Todos los productos cuentan con garantía y soporte después de tu compra. Si algo sale mal, te acompañamos para resolverlo.</p>
+            </details>
+            <details>
+              <summary>¿Ofrecen servicio técnico? <span class="faq-plus" aria-hidden="true">+</span></summary>
+              <p>Contamos con servicio técnico especializado para celulares, computadores y accesorios. Cuéntanos qué problema tiene tu equipo y te ayudamos.</p>
+            </details>
+            <details>
+              <summary>¿Cómo hago seguimiento a mi pedido? <span class="faq-plus" aria-hidden="true">+</span></summary>
+              <p>Después de tu compra te contactamos por WhatsApp para confirmar y hacer seguimiento al envío hasta que llegue a tus manos.</p>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="wrap">
+        <div class="footer-grid">
+          <div>
+            <a class="logo" href="index.html" style="color: #fff">
+              <img src="icon.png" alt="La Tienda de Alex" class="logo-img" />
+              <span class="logo-text">LA TIENDA DE ALEX</span>
+            </a>
+            <p style="font-size: 0.9rem; max-width: 32ch; margin-top: 0.8rem">
+              Tienda de tecnología, celulares y accesorios en Cundinamarca. Compra segura con Mercado Pago.
+            </p>
+          </div>
+          <div>
+            <h4>Tienda</h4>
+            <ul>
+              <li><a href="catalogo.html">Todos los productos</a></li>
+              <li><a href="catalogo.html?offers=1">Ofertas</a></li>
+              <li><a href="index.html#categorias">Categorías</a></li>
+              <li><a href="index.html#destacados">Destacados</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Ayuda</h4>
+            <ul>
+              <li><a href="index.html#servicio-tecnico">Servicio técnico</a></li>
+              <li><a href="index.html#confianza">Envíos y garantía</a></li>
+              <li><a href="index.html#preguntas">Preguntas frecuentes</a></li>
+              <li><a data-whatsapp href="https://wa.me/" target="_blank" rel="noopener">WhatsApp</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Contacto</h4>
+            <ul>
+              <li>📍 El Rosal, Cundinamarca</li>
+              <li>Lun — Sáb: 8AM a 7PM</li>
+              <li><a data-whatsapp href="https://wa.me/" target="_blank" rel="noopener">WhatsApp</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>© <span data-year></span> La Tienda de Alex. Todos los derechos reservados.</span>
+          <span>Hecho en Colombia 🇨🇴</span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- WhatsApp flotante -->
+    <a class="wa" data-whatsapp href="https://wa.me/" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.08-.3-.15-1.26-.47-2.4-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.44-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.66-1.61-.91-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.87 1.21 3.07.15.2 2.1 3.2 5.08 4.49.7.3 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.18-1.42-.08-.12-.28-.2-.57-.34M12.05 21.8h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.89 9.89-9.89 2.64 0 5.12 1.03 6.99 2.9a9.83 9.83 0 0 1 2.89 6.99c0 5.45-4.43 9.89-9.88 9.89M20.52 3.45A11.9 11.9 0 0 0 12.05 0C5.46 0 .1 5.36.1 11.95c0 2.1.55 4.14 1.59 5.94L0 24l6.3-1.65a11.88 11.88 0 0 0 5.69 1.45c6.58 0 11.94-5.36 11.95-11.95 0-3.19-1.24-6.19-3.42-8.4Z" /></svg>
+    </a>
+
+    <!-- Modal Servicio Técnico -->
+    <div class="modal-overlay" data-service-modal hidden>
+      <div class="modal">
+        <button class="modal-close" data-service-close aria-label="Cerrar">✕</button>
+        <h3>Solicitar servicio técnico</h3>
+        <form data-service-form>
+          <div class="field">
+            <label>¿Qué dispositivo tienes?</label>
+            <input type="text" name="device" placeholder="Ej: iPhone 12, Samsung A52..." required />
+          </div>
+          <div class="field">
+            <label>¿Qué problema presenta?</label>
+            <textarea name="problem" rows="3" placeholder="Describe el problema..." required></textarea>
+          </div>
+          <div class="field">
+            <label>Tu nombre</label>
+            <input type="text" name="name" placeholder="Nombre completo" required />
+          </div>
+          <div class="field">
+            <label>Teléfono</label>
+            <input type="tel" name="phone" placeholder="+57 300 000 0000" required />
+          </div>
+          <button class="btn btn-primary btn-block" type="submit">Enviar solicitud</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="assets/js/estructura.js?v=20261013-estructura" defer></script>
+    <script type="module" src="assets/js/home.js?v=20261009-search-theme"></script>
+  </body>
+</html>

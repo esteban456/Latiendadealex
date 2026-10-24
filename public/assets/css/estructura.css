@@ -1,0 +1,424 @@
+/* ==========================================================
+   Estructura tipo tienda (según la referencia) con el estilo
+   propio de La Tienda de Alex. Barra de anuncios rotativa,
+   marquee, banner a ancho completo, grilla tipo tienda y FAQ.
+   ========================================================== */
+
+/* ---------- barra de anuncios rotativa ---------- */
+.announce-bar {
+  background: #202624;
+  color: #e7ece8;
+  font-size: 0.82rem;
+  position: relative;
+  z-index: 30;
+}
+
+.announce-bar__inner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 42px;
+}
+
+.announce-bar__viewport {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+.announce-bar__slide {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-align: center;
+  min-height: 42px;
+  padding: 0 0.5rem;
+}
+
+.announce-bar__slide.is-active {
+  display: flex;
+  animation: announceIn 0.45s ease both;
+}
+
+.announce-bar__slide b {
+  color: #fff;
+}
+
+.announce-bar__slide a {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.announce-bar__arrow {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding: 0.35rem 0.55rem;
+  border-radius: 6px;
+  line-height: 1;
+  font-size: 0.9rem;
+  opacity: 0.75;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.announce-bar__arrow:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.announce-bar__dots {
+  display: flex;
+  gap: 0.32rem;
+  padding-inline: 0.25rem;
+}
+
+.announce-bar__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.35);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.announce-bar__dot:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.announce-bar__dot.is-active {
+  background: #fff;
+  transform: scale(1.35);
+}
+
+@keyframes announceIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- marquee de texto ---------- */
+.marquee {
+  overflow: hidden;
+  background: var(--brand);
+  color: #fff;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 34s linear infinite;
+  will-change: transform;
+}
+
+.marquee:hover .marquee__track {
+  animation-play-state: paused;
+}
+
+.marquee__group {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  padding: 0.62rem 0;
+  font-size: 0.84rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.marquee__group span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1.3rem;
+}
+
+.marquee__group span::after {
+  content: "•";
+  margin-left: 1.3rem;
+  opacity: 0.55;
+}
+
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ---------- banner a ancho completo ---------- */
+.promo-banner {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: clamp(240px, 34vw, 440px);
+  overflow: hidden;
+  background: #17221e;
+  color: #fff;
+  text-align: center;
+}
+
+.promo-banner__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.5;
+}
+
+.promo-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(15, 23, 20, 0.45), rgba(15, 23, 20, 0.78));
+}
+
+.promo-banner__inner {
+  position: relative;
+  z-index: 2;
+  padding: clamp(2.4rem, 6vw, 4.5rem) 1.5rem;
+  max-width: 660px;
+}
+
+.promo-banner__inner .eyebrow {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+.promo-banner__inner h2 {
+  color: #fff;
+  font-size: clamp(1.65rem, 4vw, 2.7rem);
+  margin: 0.2rem 0 0.7rem;
+}
+
+.promo-banner__inner p {
+  color: rgba(255, 255, 255, 0.86);
+  margin: 0 0 1.4rem;
+  font-size: 1.02rem;
+}
+
+.promo-banner__cta {
+  display: inline-flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.promo-banner__cta .btn-outline {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+.promo-banner__cta .btn-outline:hover {
+  background: rgba(255, 255, 255, 0.28);
+  border-color: #fff;
+}
+
+/* ---------- grilla tipo tienda (hasta 4 columnas) ---------- */
+.grid--promo {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 720px) {
+  .grid--promo { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1080px) {
+  .grid--promo { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* ---------- preguntas frecuentes ---------- */
+.faq-wrap {
+  max-width: 840px;
+  margin-inline: auto;
+}
+
+.faq .accordion {
+  margin-top: 0;
+}
+
+.faq details {
+  padding: 1.1rem 0.2rem;
+}
+
+.faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0;
+  list-style: none;
+  font-size: 1.02rem;
+}
+
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq summary::marker {
+  content: "";
+}
+
+.faq summary .faq-plus {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 0.95rem;
+  font-weight: 700;
+  transition: transform 0.25s ease, background-color 0.2s ease;
+}
+
+.faq details[open] summary .faq-plus {
+  transform: rotate(45deg);
+}
+
+.faq p {
+  margin: 0.7rem 0 0;
+  max-width: 68ch;
+}
+
+@media (max-width: 560px) {
+  .announce-bar__dots { display: none; }
+  .marquee__group { font-size: 0.78rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track { animation: none; }
+  .announce-bar__slide.is-active { animation: none; }
+}
+
+/* ---------- contraste en tema oscuro ----------
+   Elementos que en claro usan background:var(--ink) (oscuro) reciben
+   --ink = #f3f5f3 (claro) en tema oscuro y quedaban con texto blanco
+   sobre fondo claro. Se les da una superficie oscura con texto claro. */
+html[data-theme="dark"] .btn-dark {
+  background: #2b3831;
+  border-color: #3b463f;
+  color: #eef2ee;
+}
+
+html[data-theme="dark"] .btn-dark:hover {
+  background: #35443c;
+}
+
+html[data-theme="dark"] .nav a.active,
+html[data-theme="dark"] .main-nav a.active {
+  background: #2b3831;
+  color: #fff;
+}
+
+html[data-theme="dark"] .diff-btn.active,
+html[data-theme="dark"] .view-btn.active {
+  background: #2b3831;
+  color: #fff;
+}
+
+/* ---------- tarjetas de producto: aspecto de la referencia ----------
+   La referencia (pagina.txt) usa tarjetas de esquinas casi rectas
+   (--card-corner-radius: 4px), imagen cuadrada sin radio
+   (--product-corner-radius: 0px) y sin efecto al pasar el mouse
+   (body.card-hover-effect-none). Se conserva todo el contenido. */
+.card {
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.card-media,
+.card-media img {
+  border-radius: 0;
+}
+
+.card:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--line);
+}
+
+.card:hover .card-media img {
+  transform: none;
+}
+
+/* ImageKit ya entrega las fotos con el fondo recortado (transparente), asi que
+   se desactiva el "multiply" que se usaba para disimular fondos blancos: el
+   producto se ve limpio tanto en tema claro como oscuro. */
+.card-media img,
+.product .gallery > img,
+.product .thumbs img {
+  mix-blend-mode: normal;
+}
+
+/* ==========================================================
+   Pulido de la versión celular (≤ 760px)
+   - Encabezado en 2 filas: logo + acciones, luego el buscador
+     (antes las acciones caían a una tercera fila y el header
+     quedaba de ~167px de alto en catálogo y producto).
+   - Objetivos táctiles cómodos (FAQ, enlaces, botones, chips).
+   - Texto más pequeño ahora legible.
+   - Tarjetas de producto algo más compactas.
+   ========================================================== */
+@media (max-width: 760px) {
+  /* --- Encabezado: fijar logo y acciones en la primera fila --- */
+  body:has(header.header) header.header .wrap:first-child > .logo {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  body:has(header.header) header.header .wrap:first-child > .header-actions {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  body:has(header.header) header.header .wrap:first-child > .search {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  /* --- Objetivos táctiles (mínimo recomendado ~44px) --- */
+  .announce-bar__inner,
+  .announce-bar__slide { min-height: 46px; }
+  .announce-bar__arrow { min-width: 40px; min-height: 40px; padding: 0; font-size: 1.05rem; }
+
+  .link-more { min-height: 44px; }
+  body:has(header.header) .breadcrumb a { padding-block: 12px; margin-block: -12px; }
+
+  .faq details { padding: 0; border-bottom: 1px solid var(--line); }
+  .faq summary { min-height: 54px; padding: 0.95rem 0.15rem; gap: 0.85rem; font-size: 1rem; }
+  .faq summary .faq-plus { width: 27px; height: 27px; font-size: 1.05rem; }
+  .faq details p { padding: 0 0.15rem 0.2rem; }
+
+  .footer li a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+  }
+  .footer li { line-height: 1.15; }
+
+  body:has(header.header) .search-theme-toggle { width: 44px; height: 44px; }
+  body:has(header.header) .card .btn { min-height: 44px; }
+  body:has(header.header) .filter-item { min-height: 40px; }
+  body:has(header.header) .diff-btn { min-height: 44px; }
+  body:has(header.header) input[type="checkbox"],
+  body:has(header.header) input[type="radio"] { width: 20px; height: 20px; }
+
+  /* --- Texto pequeño, ahora legible --- */
+  body:has(header.header) .section-head .eyebrow { font-size: 0.7rem; }
+  .badge { font-size: 0.7rem; }
+  .card-brand { font-size: 0.75rem; }
+  body:has(header.header) .mobile-app-tab { font-size: 0.68rem; }
+
+  /* --- Tarjetas de producto algo más compactas --- */
+  body:has(header.header) .card-body { gap: 5px; padding: 9px 9px 10px; }
+
+  /* Nombre clicable con área táctil cómoda, sin mover el diseño. */
+  body:has(header.header) .card-name {
+    padding-block: 4px;
+    margin-block: -4px;
+  }
+}
