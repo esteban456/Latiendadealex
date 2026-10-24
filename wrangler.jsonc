@@ -1,0 +1,15 @@
+{
+  "name": "latiendadealex",
+  "compatibility_date": "2026-08-04",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "pages_build_output_dir": "public",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tienda-db",
+      "database_id": "7d583e5e-f579-493b-bc4e-600aea4032ec"
+    }
+  ]
+}
