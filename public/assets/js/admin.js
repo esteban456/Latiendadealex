@@ -403,45 +403,15 @@ window.setInterval(() => {
 $('#page-prev').addEventListener('click', () => { state.offset = Math.max(0, state.offset - state.limit); loadProducts().catch((error) => notice(error.message, 'error')); });
 $('#page-next').addEventListener('click', () => { state.offset += state.limit; loadProducts().catch((error) => notice(error.message, 'error')); });
 
-let backgroundRemoverPromise;
-function loadBackgroundRemover() {
-  if (!backgroundRemoverPromise) {
-    backgroundRemoverPromise = import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.8/+esm')
-      .then((module) => module.removeBackground || module.default)
-      .catch((error) => { console.warn('No se pudo cargar el quitafondos:', error); return null; });
-  }
-  return backgroundRemoverPromise;
-}
-
-async function removePhotoBackground(file) {
-  const removeBackground = await loadBackgroundRemover();
-  if (typeof removeBackground !== 'function') return file;
-  notice('Quitando el fondo de la foto…');
-  try {
-    const blob = await removeBackground(file, {
-      output: { format: 'image/png' },
-      progress: (key, current, total) => {
-        if (String(key).startsWith('fetch:') && total) notice(`Descargando el modelo de recorte… ${Math.round((current / total) * 100)}%`);
-      },
-    });
-    return blob;
-  } catch (error) {
-    console.warn('No se pudo quitar el fondo:', error);
-    return file;
-  }
-}
-
 async function uploadProductImage(file) {
   if (!file) return;
   if (!file.type.startsWith('image/')) return notice('Selecciona una imagen JPG, PNG o WebP.', 'error');
   try {
-    const [productSource, templateResponse] = await Promise.all([
-      removePhotoBackground(file),
-      fetch('/assets/img/plantilla.jpg', { cache: 'force-cache' }),
-    ]);
+    notice('Preparando imagen…');
+    const templateResponse = await fetch('/assets/img/plantilla.jpg', { cache: 'force-cache' });
     if (!templateResponse.ok) throw new Error('No se encontró la plantilla de imagen.');
     const templateBitmap = await createImageBitmap(await templateResponse.blob());
-    const productBitmap = await createImageBitmap(productSource);
+    const productBitmap = await createImageBitmap(file);
     const canvas = document.createElement('canvas');
     canvas.width = templateBitmap.width;
     canvas.height = templateBitmap.height;
@@ -469,7 +439,7 @@ async function uploadProductImage(file) {
     $('#field-image').value = uploaded.image;
     $('#image-preview').src = uploaded.image;
     $('#image-preview').hidden = false;
-    notice('Imagen subida. Guarda el producto para aplicar los cambios.', 'success');
+    notice('Imagen subida y centrada sobre la plantilla. Guarda el producto para aplicar los cambios.', 'success');
   } catch (error) { notice(error.message || 'No se pudo subir la imagen.', 'error'); }
 }
 

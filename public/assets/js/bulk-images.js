@@ -45,9 +45,9 @@
         for(const c of cands){try{const r=await fetch(c.url,{headers:{'User-Agent':'Mozilla/5.0'}}); if(r.ok){const buf=await r.arrayBuffer(); if(buf.byteLength>5000){blob=new Blob([buf],{type:r.headers.get('content-type')||'image/jpeg'}); break;}}}catch(e){last=e}}
         if(!blob) throw new Error('no desc');
         row.textContent='Procesando';
-        const [ps,tr]=await Promise.all([removeBg(blob),fetch('/assets/img/plantilla.jpg',{cache:'force-cache'})]);
+        const tr=await fetch('/assets/img/plantilla.jpg',{cache:'force-cache'});
         if(!tr.ok) throw new Error('plantilla');
-        const tb=await createImageBitmap(await tr.blob()); const pb=await createImageBitmap(ps);
+        const tb=await createImageBitmap(await tr.blob()); const pb=await createImageBitmap(blob);
         const canvas=document.createElement('canvas'); canvas.width=tb.width; canvas.height=tb.height;
         const ctx=canvas.getContext('2d'); ctx.drawImage(tb,0,0);
         const s=Math.min((canvas.width*0.72)/pb.width,(canvas.height*0.43)/pb.height);
@@ -63,10 +63,5 @@
       $('#bulk-status').textContent='Procesados '+(done+fail)+'/'+q.length;
     }
     $('#bulk-run').disabled=false;
-  }
-  async function removeBg(f){
-    const m=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.8/+esm');
-    const rb=m.removeBackground||m.default;
-    return await rb(f,{output:{format:'image/png'}});
   }
 })();
