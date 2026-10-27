@@ -190,7 +190,7 @@
     <div id="product-editor" class="modal" hidden>
       <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="edit-title">
         <header class="modal-heading"><h2 id="edit-title">Agregar producto</h2><button id="close-editor" class="close" type="button" aria-label="Cerrar">×</button></header>
-        <form id="product-form">
+        <form id="product-form" novalidate>
           <input id="edit-id" type="hidden" />
           <div class="form-grid">
             <div class="field"><label for="field-name">Nombre *</label><input id="field-name" maxlength="180" required /></div>
@@ -208,7 +208,7 @@
         </form>
       </section>
     </div>
-    <script src="assets/js/admin.js?v=20261027-image-preview3" defer></script>
+    <script src="assets/js/admin.js?v=20261027-save-feedback" defer></script>
     <script src="assets/js/bulk-images.js?v=20261026-no-bg-removal" defer></script>
   </body>
 </html>

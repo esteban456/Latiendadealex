@@ -516,15 +516,22 @@ document.addEventListener('paste', async (event) => {
 productForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   if (state.uploadingImage) return notice('Espera a que termine la subida de la imagen.', 'error');
+  const name = $('#field-name').value.trim();
+  const cost = Number($('#field-cost').value);
+  const category = $('#field-category').value.trim();
+  if (!name) { notice('Escribe el nombre del producto.', 'error'); $('#field-name').focus(); return; }
+  if (!Number.isFinite(cost) || cost <= 0) { notice('Escribe un costo mayor que cero.', 'error'); $('#field-cost').focus(); return; }
+  if (!category) { notice('Escribe o selecciona una categoría.', 'error'); $('#field-category').focus(); return; }
   const button = $('#save-product');
   button.disabled = true;
   button.textContent = 'Guardando…';
+  notice('Enviando el producto al servidor…');
   const product = {
-    id: $('#edit-id').value || undefined, name: $('#field-name').value, brand: $('#field-brand').value,
-    cost: Number($('#field-cost').value), price: Number($('#field-price').value),
+    id: $('#edit-id').value || undefined, name, brand: $('#field-brand').value,
+    cost, price: Number($('#field-price').value),
     offerCredit: $('#field-credit-enabled').checked,
     creditPrice: $('#field-credit-enabled').checked ? Number($('#field-credit-price').value || $('#field-price').value) : null,
-    stock: Number($('#field-stock').value), category: $('#field-category').value,
+    stock: Number($('#field-stock').value), category,
     description: $('#field-description').value, image: $('#field-image').value, csrf: state.csrf,
   };
   const saveController = new AbortController();
