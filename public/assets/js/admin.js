@@ -528,7 +528,8 @@ productForm.addEventListener('submit', async (event) => {
     hideEditor();
     state.offset = 0;
     notice('Producto guardado correctamente.', 'success');
-    await loadProducts();
+    try { await loadProducts(); }
+    catch (error) { notice(`El producto sí se guardó, pero no se pudo actualizar la lista: ${error.message}`, 'error'); }
   } catch (error) { notice(error.message, 'error'); }
   finally { button.disabled = false; button.textContent = 'Guardar producto'; }
 });
