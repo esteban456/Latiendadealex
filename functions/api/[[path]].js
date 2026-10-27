@@ -183,7 +183,7 @@ async function adminApi(request, url, env) {
   return json({ error: 'Ruta de administración no encontrada.' }, 404);
 }
 
-async function adminList(db, url) {
+async function adminList(db, url, env) {
   if (!db) return json({ error: 'Falta vincular la base de datos D1 (DB).' }, 503);
   let products = (await db.prepare('SELECT data FROM products').all()).results.map((row) => JSON.parse(row.data));
   const id = url.searchParams.get('id');
