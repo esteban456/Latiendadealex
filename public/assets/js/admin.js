@@ -415,16 +415,18 @@ $('#page-next').addEventListener('click', () => { state.offset += state.limit; l
 async function uploadProductImage(file) {
   if (!file) return;
   if (!file.type.startsWith('image/')) return notice('Selecciona una imagen JPG, PNG o WebP.', 'error');
+  if (file.size > 15 * 1024 * 1024) return notice('La foto supera 15 MB. Redúcela o elige una más pequeña.', 'error');
   const saveButton = $('#save-product');
   const existingImage = $('#field-image').value;
+  let localPreviewReady = false;
   state.uploadingImage = true;
   saveButton.disabled = true;
+  saveButton.textContent = 'Subiendo imagen…';
   try {
     notice('Preparando imagen…');
     const templateResponse = await fetch('/assets/img/plantilla.jpg', { cache: 'force-cache' });
     if (!templateResponse.ok) throw new Error('No se encontró la plantilla de imagen.');
     const templateBitmap = await createImageBitmap(await templateResponse.blob());
-    // Decodifica una versión reducida para evitar cargar fotos enormes en equipos lentos.
     const productBitmap = await createImageBitmap(file, { resizeWidth: 1400, resizeQuality: 'high' });
     const canvas = document.createElement('canvas');
     canvas.width = templateBitmap.width;
@@ -443,25 +445,35 @@ async function uploadProductImage(file) {
     templateBitmap.close();
     const dataUrl = canvas.toDataURL('image/webp', 0.78);
     if (dataUrl.length > 5_300_000) throw new Error('La imagen sigue siendo muy pesada. Prueba con otra más pequeña.');
-    // Enseña la composición localmente mientras termina la subida.
     $('#image-preview').src = dataUrl;
     $('#image-preview').hidden = false;
+    localPreviewReady = true;
     notice('Subiendo imagen…');
-    const uploaded = await request('/api/admin/upload', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ dataUrl, csrf: state.csrf }),
-    });
+    const controller = new AbortController();
+    const uploadTimeout = setTimeout(() => controller.abort(), 45_000);
+    let uploaded;
+    try {
+      uploaded = await request('/api/admin/upload', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dataUrl, csrf: state.csrf }), signal: controller.signal,
+      });
+    } catch (error) {
+      if (error.name === 'AbortError') throw new Error('La subida tardó más de 45 segundos y se canceló. Puedes guardar el producto sin imagen e intentarlo luego.');
+      throw error;
+    } finally { clearTimeout(uploadTimeout); }
     $('#field-image').value = uploaded.image;
-    $('#image-preview').src = uploaded.image;
-    $('#image-preview').hidden = false;
     notice('Imagen subida y centrada sobre la plantilla. Guarda el producto para aplicar los cambios.', 'success');
   } catch (error) {
-    $('#image-preview').src = existingImage;
-    $('#image-preview').hidden = !existingImage;
-    notice(error.message || 'No se pudo subir la imagen.', 'error');
+    if (!localPreviewReady) {
+      $('#image-preview').src = existingImage;
+      $('#image-preview').hidden = !existingImage;
+    }
+    const detail = error.message || 'No se pudo subir la imagen.';
+    notice(localPreviewReady ? `${detail} La vista previa se conserva; el producto puede guardarse sin esta imagen.` : detail, 'error');
   } finally {
     state.uploadingImage = false;
     saveButton.disabled = false;
+    saveButton.textContent = 'Guardar producto';
   }
 }
 const imageDropZone = $('.image-row');
@@ -508,32 +520,28 @@ productForm.addEventListener('submit', async (event) => {
   button.disabled = true;
   button.textContent = 'Guardando…';
   const product = {
-    id: $('#edit-id').value || undefined,
-    name: $('#field-name').value,
-    brand: $('#field-brand').value,
-    cost: Number($('#field-cost').value),
-    price: Number($('#field-price').value),
+    id: $('#edit-id').value || undefined, name: $('#field-name').value, brand: $('#field-brand').value,
+    cost: Number($('#field-cost').value), price: Number($('#field-price').value),
     offerCredit: $('#field-credit-enabled').checked,
     creditPrice: $('#field-credit-enabled').checked ? Number($('#field-credit-price').value || $('#field-price').value) : null,
-    stock: Number($('#field-stock').value),
-    category: $('#field-category').value,
-    description: $('#field-description').value,
-    image: $('#field-image').value,
-    csrf: state.csrf,
+    stock: Number($('#field-stock').value), category: $('#field-category').value,
+    description: $('#field-description').value, image: $('#field-image').value, csrf: state.csrf,
   };
+  const saveController = new AbortController();
+  const saveTimeout = setTimeout(() => saveController.abort(), 30_000);
   try {
     await request('/api/admin/products', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(product),
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(product), signal: saveController.signal,
     });
     hideEditor();
     state.offset = 0;
     notice('Producto guardado correctamente.', 'success');
     try { await loadProducts(); }
     catch (error) { notice(`El producto sí se guardó, pero no se pudo actualizar la lista: ${error.message}`, 'error'); }
-  } catch (error) { notice(error.message, 'error'); }
-  finally { button.disabled = false; button.textContent = 'Guardar producto'; }
+  } catch (error) {
+    notice(error.name === 'AbortError' ? 'El servidor no respondió en 30 segundos. Revisa si el producto aparece en la lista antes de volver a guardarlo.' : error.message, 'error');
+  } finally { clearTimeout(saveTimeout); button.disabled = false; button.textContent = 'Guardar producto'; }
 });
-
 $('#field-credit-enabled').addEventListener('change', (event) => {
   $('#field-credit-price').disabled = !event.target.checked;
   applyCost();
