@@ -177,7 +177,14 @@ async function adminApi(request, url, env) {
   }
   if (request.method === 'GET' && url.pathname === '/api/admin/orders') return adminListOrders(env.DB, url);
   if (request.method === 'POST' && url.pathname === '/api/admin/orders/status') return adminUpdateOrderStatus(env.DB, body);
-  if (request.method === 'POST' && url.pathname === '/api/admin/products') return adminSave(env.DB, body);
+  if (request.method === 'POST' && url.pathname === '/api/admin/products') {
+    try {
+      return await adminSave(env.DB, body);
+    } catch (error) {
+      console.error('adminSave error:', error);
+      return json({ error: `Error al guardar producto: ${String(error?.message || error).slice(0, 240)}` }, 500);
+    }
+  }
   if (request.method === 'DELETE' && url.pathname === '/api/admin/products') return adminDelete(env.DB, body.id);
   if (request.method === 'POST' && url.pathname === '/api/admin/upload') return uploadImage(env, body);
   return json({ error: 'Ruta de administración no encontrada.' }, 404);

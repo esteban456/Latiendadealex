@@ -1,5 +1,5 @@
 const $ = (selector) => document.querySelector(selector);
-const state = { csrf: '', offset: 0, limit: 50, total: 0, search: '', category: '', stock: '', categories: [] };
+const state = { csrf: '', offset: 0, limit: 50, total: 0, search: '', category: '', stock: '', categories: [], uploadingImage: false };
 const authView = $('#admin-login-view');
 const appView = $('#admin-app');
 const productForm = $('#product-form');
@@ -415,19 +415,22 @@ $('#page-next').addEventListener('click', () => { state.offset += state.limit; l
 async function uploadProductImage(file) {
   if (!file) return;
   if (!file.type.startsWith('image/')) return notice('Selecciona una imagen JPG, PNG o WebP.', 'error');
+  const saveButton = $('#save-product');
+  const existingImage = $('#field-image').value;
+  state.uploadingImage = true;
+  saveButton.disabled = true;
   try {
     notice('Preparando imagen…');
     const templateResponse = await fetch('/assets/img/plantilla.jpg', { cache: 'force-cache' });
     if (!templateResponse.ok) throw new Error('No se encontró la plantilla de imagen.');
     const templateBitmap = await createImageBitmap(await templateResponse.blob());
-    const productBitmap = await createImageBitmap(file);
+    // Decodifica una versión reducida para evitar cargar fotos enormes en equipos lentos.
+    const productBitmap = await createImageBitmap(file, { resizeWidth: 1400, resizeQuality: 'high' });
     const canvas = document.createElement('canvas');
     canvas.width = templateBitmap.width;
     canvas.height = templateBitmap.height;
     const context = canvas.getContext('2d');
     context.drawImage(templateBitmap, 0, 0, canvas.width, canvas.height);
-
-    // Ubica el producto en la zona libre del diseño, antes de la franja inferior.
     const maxWidth = canvas.width * 0.72;
     const maxHeight = canvas.height * 0.43;
     const scale = Math.min(maxWidth / productBitmap.width, maxHeight / productBitmap.height);
@@ -438,8 +441,11 @@ async function uploadProductImage(file) {
     context.drawImage(productBitmap, x, y, productWidth, productHeight);
     productBitmap.close();
     templateBitmap.close();
-    const dataUrl = canvas.toDataURL('image/webp', 0.82);
+    const dataUrl = canvas.toDataURL('image/webp', 0.78);
     if (dataUrl.length > 5_300_000) throw new Error('La imagen sigue siendo muy pesada. Prueba con otra más pequeña.');
+    // Enseña la composición localmente mientras termina la subida.
+    $('#image-preview').src = dataUrl;
+    $('#image-preview').hidden = false;
     notice('Subiendo imagen…');
     const uploaded = await request('/api/admin/upload', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -449,9 +455,15 @@ async function uploadProductImage(file) {
     $('#image-preview').src = uploaded.image;
     $('#image-preview').hidden = false;
     notice('Imagen subida y centrada sobre la plantilla. Guarda el producto para aplicar los cambios.', 'success');
-  } catch (error) { notice(error.message || 'No se pudo subir la imagen.', 'error'); }
+  } catch (error) {
+    $('#image-preview').src = existingImage;
+    $('#image-preview').hidden = !existingImage;
+    notice(error.message || 'No se pudo subir la imagen.', 'error');
+  } finally {
+    state.uploadingImage = false;
+    saveButton.disabled = false;
+  }
 }
-
 const imageDropZone = $('.image-row');
 $('#image-file').addEventListener('change', async (event) => {
   await uploadProductImage(event.target.files?.[0]);
@@ -491,6 +503,7 @@ document.addEventListener('paste', async (event) => {
 
 productForm.addEventListener('submit', async (event) => {
   event.preventDefault();
+  if (state.uploadingImage) return notice('Espera a que termine la subida de la imagen.', 'error');
   const button = $('#save-product');
   button.disabled = true;
   button.textContent = 'Guardando…';
@@ -514,7 +527,7 @@ productForm.addEventListener('submit', async (event) => {
     });
     hideEditor();
     state.offset = 0;
-    notice('Producto guardado en el catálogo JSON.', 'success');
+    notice('Producto guardado correctamente.', 'success');
     await loadProducts();
   } catch (error) { notice(error.message, 'error'); }
   finally { button.disabled = false; button.textContent = 'Guardar producto'; }
