@@ -40,7 +40,7 @@ function applyCost() {
 }
 
 function notice(message, kind = '') {
-  const node = $(authView.hidden ? '#admin-notice-app' : '#admin-notice-login');
+  const node = !editor.hidden ? $('#editor-notice') : $(authView.hidden ? '#admin-notice-app' : '#admin-notice-login');
   node.textContent = message;
   node.className = `notice ${kind}`;
   node.hidden = !message;
