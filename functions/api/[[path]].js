@@ -39,7 +39,7 @@ export async function onRequest(context) {
     if (route === 'POST /api/admin/logout') {
       return json({ ok: true }, 200, { 'Set-Cookie': [cookie('admin_session', '', request, 0, true), cookie('admin_csrf', '', request, 0)] });
     }
-    if (url.pathname.startsWith('/api/admin/')) return adminApi(request, url, env);
+    if (url.pathname.startsWith('/api/admin/')) return await adminApi(request, url, env);
 
     if (route === 'POST /api/checkout') return checkout(request, env);
     if (route === 'POST /api/webhook') return webhook(request, url, env);
@@ -166,7 +166,15 @@ async function adminApi(request, url, env) {
     body = await readJson(request, url.pathname.endsWith('/upload') ? 5_500_000 : 1_000_000);
     if (!body.csrf || body.csrf !== getCookie(request, 'admin_csrf')) return json({ error: 'La sesión expiró. Vuelve a iniciar sesión.' }, 403);
   }
-  if (request.method === 'GET' && url.pathname === '/api/admin/products') return adminList(env.DB, url);
+  if (request.method === 'GET' && url.pathname === '/api/admin/products') {
+    try {
+      return await adminList(env.DB, url, env);
+    } catch (error) {
+      console.error('adminList error:', error);
+      const detail = String(error?.message || error || 'Error desconocido').slice(0, 300);
+      return json({ error: 'No se pudo consultar el catálogo en D1.', detail }, 500);
+    }
+  }
   if (request.method === 'GET' && url.pathname === '/api/admin/orders') return adminListOrders(env.DB, url);
   if (request.method === 'POST' && url.pathname === '/api/admin/orders/status') return adminUpdateOrderStatus(env.DB, body);
   if (request.method === 'POST' && url.pathname === '/api/admin/products') return adminSave(env.DB, body);
