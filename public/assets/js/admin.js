@@ -73,23 +73,32 @@ function showSetup() {
 async function enterPanel() {
   const response = await fetch('/api/admin/products?limit=1', { credentials: 'same-origin' });
   if (response.status === 401) return showLogin();
-  const data = await response.json();
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || 'No se pudo cargar el catálogo del panel.');
+  if (typeof data.total !== 'number' || !Number.isFinite(data.total)) throw new Error(data.error || 'El servidor no devolvió el catálogo del panel.');
   authView.hidden = true;
   appView.hidden = false;
   $('#logout-button').hidden = false;
   state.total = data.total;
   $('#admin-total').textContent = data.total.toLocaleString('es-CO');
-  await loadProducts();
-  await loadOrders();
+  try {
+    await loadProducts();
+    await loadOrders();
+  } catch (error) {
+    notice(`Sesión válida, pero no se pudo cargar toda la información del panel: ${error.message}`, 'error');
+  }
 }
 
 async function openPanel() {
   try {
     const session = await request('/api/admin/session');
-    if (session.authenticated) return enterPanel();
+    if (session.authenticated) return await enterPanel();
     if (session.setupRequired) return showSetup();
     showLogin();
-  } catch { showLogin(); }
+  } catch (error) {
+    showLogin();
+    notice(error.message || 'No se pudo verificar la sesión del administrador.', 'error');
+  }
 }
 
 async function loadProducts() {
