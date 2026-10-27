@@ -92,7 +92,10 @@ async function enterPanel() {
 async function openPanel() {
   try {
     const session = await request('/api/admin/session');
-    if (session.authenticated) return await enterPanel();
+    if (session.authenticated) {
+      state.csrf = session.csrf || '';
+      return await enterPanel();
+    }
     if (session.setupRequired) return showSetup();
     showLogin();
   } catch (error) {
