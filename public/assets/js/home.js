@@ -118,6 +118,15 @@ function renderFeatured(products) {
     : '<div class="empty" style="grid-column:1/-1"><div class="ico">📦</div><b>No hay productos destacados</b></div>';
 }
 
+function renderBestSellers(products) {
+  const container = $('[data-best-sellers]');
+  if (!container) return;
+  const bestSellers = pickBestSellers(products, 4);
+  container.innerHTML = bestSellers.length
+    ? bestSellers.map(productCard).join('')
+    : '<div class="empty" style="grid-column:1/-1"><div class="ico">📦</div><b>Aún no hay productos disponibles</b></div>';
+}
+
 function renderAlexRecommendation(products) {
   const container = $('[data-alex-recommendation]');
   if (!container) return;
@@ -274,6 +283,7 @@ async function main() {
   renderHeroProducts(products);
   renderOffers(products);
   renderFeatured(products);
+  renderBestSellers(products);
   renderAlexRecommendation(products);
   renderDifferential(products);
   renderCountdown();
