@@ -191,12 +191,14 @@ function showEditor(product = null) {
   $('#field-category').value = product?.categories?.[0]?.name || '';
   $('#field-description').value = product?.description || '';
   $('#field-image').value = product?.image || '';
+  $('#image-url-input').value = /^https?:\/\//i.test(product?.image || '') ? product.image : '';
   $('#image-preview').src = product?.image || '';
   $('#image-preview').hidden = !product?.image;
   $('#image-file').value = '';
   $('#category-options').innerHTML = state.categories.map((category) => `<option value="${escapeHtml(category.name)}"></option>`).join('');
   editor.hidden = false;
   document.body.classList.add('modal-open');
+  updateImageSearchLinks();
   $('#field-name').focus();
 }
 
@@ -480,6 +482,29 @@ async function uploadProductImage(file) {
   }
 }
 const imageDropZone = $('.image-row');
+function updateImageSearchLinks() {
+  const query = [$('#field-brand').value.trim(), $('#field-name').value.trim()].filter(Boolean).join(' ') || 'producto';
+  const encoded = encodeURIComponent(query);
+  $('#image-search-google').href = `https://www.google.com/search?tbm=isch&q=${encoded}`;
+  $('#image-search-bing').href = `https://www.bing.com/images/search?q=${encoded}`;
+  $('#image-search-mercadolibre').href = `https://listado.mercadolibre.com.co/${encodeURIComponent(query.replace(/\s+/g, '-'))}`;
+  $('#image-search-aliexpress').href = `https://www.aliexpress.com/wholesale?SearchText=${encoded}`;
+}
+$('#field-name').addEventListener('input', updateImageSearchLinks);
+$('#field-brand').addEventListener('input', updateImageSearchLinks);
+$('#use-image-url').addEventListener('click', () => {
+  const value = $('#image-url-input').value.trim();
+  let parsed;
+  try { parsed = new URL(value); } catch { return notice('Pega un enlace válido a una imagen.', 'error'); }
+  if (!['http:', 'https:'].includes(parsed.protocol)) return notice('El enlace de imagen debe comenzar con http o https.', 'error');
+  $('#field-image').value = parsed.href;
+  $('#image-preview').src = parsed.href;
+  $('#image-preview').hidden = false;
+  notice('Imagen seleccionada. Guarda el producto para aplicar el enlace.', 'success');
+});
+$('#image-preview').addEventListener('error', () => {
+  if ($('#image-url-input').value.trim()) notice('No se pudo mostrar esa imagen. Prueba con el enlace directo al archivo o sube una imagen desde tu PC.', 'error');
+});
 $('#image-file').addEventListener('change', async (event) => {
   await uploadProductImage(event.target.files?.[0]);
   event.target.value = '';
@@ -501,7 +526,14 @@ imageDropZone.addEventListener('drop', async (event) => {
   imageDropZone.classList.remove('drag-active');
   const file = [...(event.dataTransfer?.files || [])].find((item) => item.type.startsWith('image/'))
     || [...(event.dataTransfer?.items || [])].map((item) => item.getAsFile?.()).find((item) => item?.type.startsWith('image/'));
-  if (!file) return notice('El navegador no entregó el archivo de imagen. Prueba copiarla y pegarla o guardarla primero.', 'error');
+  if (!file) {
+    const droppedUrl = (event.dataTransfer?.getData('text/uri-list') || event.dataTransfer?.getData('text/plain') || '').split(/\r?\n/).find((item) => /^https?:\/\//i.test(item.trim()))?.trim();
+    if (droppedUrl) {
+      $('#image-url-input').value = droppedUrl;
+      return $('#use-image-url').click();
+    }
+    return notice('No se recibió una imagen. Prueba arrastrarla, pegar su enlace directo o subirla desde tu PC.', 'error');
+  }
   await uploadProductImage(file);
 });
 
@@ -515,6 +547,8 @@ document.addEventListener('paste', async (event) => {
   event.preventDefault();
   await uploadProductImage(file);
 });
+
+updateImageSearchLinks();
 
 productForm.addEventListener('submit', async (event) => {
   event.preventDefault();
