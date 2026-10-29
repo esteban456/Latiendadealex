@@ -544,7 +544,6 @@ productForm.addEventListener('submit', async (event) => {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(product), signal: saveController.signal,
     });
     hideEditor();
-    state.offset = 0;
     notice('Producto guardado correctamente.', 'success');
     try { await loadProducts(); }
     catch (error) { notice(`El producto sí se guardó, pero no se pudo actualizar la lista: ${error.message}`, 'error'); }
