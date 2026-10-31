@@ -460,3 +460,40 @@ body:has(header.header) .footer{background:#182a35;color:#e9eef0}
 body:has(header.header) .footer a:hover{color:#b9cbd4}
 body:has(header.header) .btn,body:has(header.header) button.button,body:has(header.header) .cart-checkout,body:has(header.header) [data-pay]{font-weight:600;letter-spacing:.01em}
 body:has(header.header) .product .price-big,body:has(header.header) .summary-total,body:has(header.header) .totals .grand{color:#1e3342}
+
+
+
+/* Microanimaciones discretas para dar respuesta visual sin distraer. */
+@media (prefers-reduced-motion: no-preference) {
+  body:has(header.header) .card,
+  body:has(header.header) .hero-product,
+  body:has(header.header) .cat-card,
+  body:has(header.header) .btn,
+  body:has(header.header) button.button,
+  body:has(header.header) .icon-btn {
+    transition: transform 220ms cubic-bezier(.2,.7,.2,1), box-shadow 220ms ease, border-color 220ms ease, background-color 180ms ease, color 180ms ease;
+  }
+  body:has(header.header) .card-media img {
+    transition: transform 320ms cubic-bezier(.2,.7,.2,1);
+    will-change: transform;
+  }
+  body:has(header.header) .card:hover .card-media img,
+  body:has(header.header) .card:focus-within .card-media img {
+    transform: scale(1.045);
+  }
+  body:has(header.header) .card:hover { transform: translateY(-3px); }
+  body:has(header.header) .hero-product:hover,
+  body:has(header.header) .hero-product:focus-within { transform: translateY(-2px); box-shadow: 0 6px 18px rgb(25 45 57 / 8%); }
+  body:has(header.header) .hero-product img { transition: transform 300ms cubic-bezier(.2,.7,.2,1); }
+  body:has(header.header) .hero-product:hover img,
+  body:has(header.header) .hero-product:focus-within img { transform: scale(1.04); }
+  body:has(header.header) .cat-card:hover,
+  body:has(header.header) .cat-card:focus-visible { transform: translateY(-2px); }
+  body:has(header.header) .btn:hover,
+  body:has(header.header) button.button:hover { transform: translateY(-1px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body:has(header.header) *,
+  body:has(header.header) *::before,
+  body:has(header.header) *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
