@@ -615,3 +615,9 @@ html[data-theme="dark"] body:has(header.header) .promo-banner__overlay{backgroun
 /* Baja ligeramente el encuadre de la imagen del banner promocional. */
 body:has(header.header) .promo-banner__img{object-position:50% 64%}
 @media(max-width:600px){body:has(header.header) .promo-banner__img{object-position:58% 64%}}
+
+
+
+/* Extiende verticalmente el banner con Portada2. */
+body:has(header.header) .promo-banner{min-height:clamp(390px,42vw,520px)}
+@media(max-width:600px){body:has(header.header) .promo-banner{min-height:430px}}
