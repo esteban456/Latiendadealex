@@ -1,4 +1,4 @@
-﻿import { $, escapeHtml, getImageSrc, getThumbSrc, initChrome, loadConfig, money, plainText, productCard, addToCart, bindAddButtons, toast } from './core.js?v=20261016-catalogo';
+import { $, escapeHtml, getImageSrc, getThumbSrc, initChrome, loadConfig, money, plainText, productCard, addToCart, bindAddButtons, toast } from './core.js?v=20261016-catalogo';
 
 const PLACEHOLDER =
   'data:image/svg+xml;utf8,' +
@@ -245,6 +245,7 @@ async function main() {
   state.variant = (product.variants || [])[0];
   state.imageIndex = 0;
   document.title = `${product.name} | La Tienda de Alex`;
+  updateProductMetadata(product);
   $('[data-crumb]').textContent = product.name;
 
   $('[data-product]').innerHTML = render(product);
@@ -392,25 +393,61 @@ function renderRelated(catalog, product) {
 }
 
 function injectSchema(product) {
-  const script = document.createElement('script');
-  script.type = 'application/ld+json';
-  script.textContent = JSON.stringify({
+  const canonicalUrl = new URL(`/producto.html?slug=${encodeURIComponent(product.slug)}`, location.origin).href;
+  const imageSources = (product.images?.length ? product.images : [product.image]).filter(Boolean).map((src) => new URL(getImageSrc(src), location.origin).href);
+  const cashVariant = product.variants?.find((variant) => /contado/i.test(variant.label));
+  const productSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
-    description: product.description,
-    image: product.images?.length ? product.images.map(toWebp) : [toWebp(product.image)],
-    brand: { '@type': 'Brand', name: product.brand || 'La Tienda de Alex' },
+    description: plainText(product.description).slice(0, 5000),
+    ...(imageSources.length ? { image: imageSources } : {}),
+    ...(product.id ? { sku: product.id } : {}),
+    ...(product.brand ? { brand: { '@type': 'Brand', name: product.brand } } : {}),
     offers: {
       '@type': 'Offer',
-      price: product.price,
+      url: canonicalUrl,
+      price: Number(cashVariant?.price || product.price),
       priceCurrency: 'COP',
       availability: product.available
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
     },
-  });
-  document.head.appendChild(script);
+  };
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${location.origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Catálogo', item: `${location.origin}/catalogo.html` },
+      { '@type': 'ListItem', position: 3, name: product.name, item: canonicalUrl },
+    ],
+  };
+  for (const [id, data] of [['product-structured-data', productSchema], ['product-breadcrumb-data', breadcrumbSchema]]) {
+    let script = document.getElementById(id);
+    if (!script) { script = document.createElement('script'); script.id = id; script.type = 'application/ld+json'; document.head.appendChild(script); }
+    script.textContent = JSON.stringify(data).replace(/</g, '\\u003c');
+  }
+}
+
+function updateProductMetadata(product) {
+  const canonicalUrl = new URL(`/producto.html?slug=${encodeURIComponent(product.slug)}`, location.origin).href;
+  const description = (plainText(product.description) || `Consulta precio, disponibilidad y detalles de ${product.name} en La Tienda de Alex.`).slice(0, 160);
+  let canonical = document.head.querySelector('link[rel="canonical"]');
+  if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
+  canonical.href = canonicalUrl;
+  const setMeta = (selector, attribute, key, value) => {
+    let meta = document.head.querySelector(`${selector}[${attribute}="${key}"]`);
+    if (!meta) { meta = document.createElement('meta'); meta.setAttribute(attribute, key); document.head.appendChild(meta); }
+    meta.content = value;
+  };
+  setMeta('meta', 'name', 'description', description);
+  setMeta('meta', 'property', 'og:type', 'product');
+  setMeta('meta', 'property', 'og:title', document.title);
+  setMeta('meta', 'property', 'og:description', description);
+  setMeta('meta', 'property', 'og:url', canonicalUrl);
+  setMeta('meta', 'property', 'og:site_name', 'La Tienda de Alex');
+  if (product.image) setMeta('meta', 'property', 'og:image', new URL(getImageSrc(product.image), location.origin).href);
 }
 
 document.addEventListener('click', (event) => {
@@ -481,3 +518,4 @@ main().catch((err) => {
   console.error(err);
   toast('No se pudo cargar el producto', 'err');
 });
+
