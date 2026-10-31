@@ -593,3 +593,19 @@ html[data-theme="dark"] body:has(header.header) .footer{background:#0b1217;color
 html[data-theme="dark"] body:has(header.header) .footer a{color:#d2dfe4}
 html[data-theme="dark"] body:has(header.header) .btn-outline,html[data-theme="dark"] body:has(header.header) .btn-ghost{background:#202d35;border-color:#53646d;color:#edf2f4}
 html[data-theme="dark"] body:has(header.header) .header-theme-toggle{color:#f0f5f7}
+
+
+
+/* Fondo propio para el banner promocional, con texto contrastado. */
+body:has(header.header) .promo-banner{position:relative;isolation:isolate;min-height:clamp(320px,34vw,440px);overflow:hidden;background:#172a35}
+body:has(header.header) .promo-banner__img{position:absolute;inset:0;width:100%;height:100%;opacity:1;filter:none;object-fit:cover;object-position:center}
+body:has(header.header) .promo-banner__overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(13,27,36,.84) 0%,rgba(13,27,36,.66) 48%,rgba(13,27,36,.18) 100%)}
+body:has(header.header) .promo-banner__inner{position:relative;z-index:1;max-width:780px;padding:clamp(36px,6vw,76px) clamp(22px,6vw,80px);color:#fff}
+body:has(header.header) .promo-banner__inner .eyebrow,body:has(header.header) .promo-banner__inner h2,body:has(header.header) .promo-banner__inner p{color:#fff}
+body:has(header.header) .promo-banner__inner h2{max-width:18ch}
+body:has(header.header) .promo-banner__inner p{max-width:52ch;color:rgba(255,255,255,.9)}
+body:has(header.header) .promo-banner__inner .btn-primary{background:#fff;border-color:#fff;color:#1e3342}
+body:has(header.header) .promo-banner__inner .btn-primary:hover{background:#e8eef1;border-color:#e8eef1}
+body:has(header.header) .promo-banner__inner .btn-outline{background:rgba(20,36,46,.28);border-color:rgba(255,255,255,.78);color:#fff}
+html[data-theme="dark"] body:has(header.header) .promo-banner__overlay{background:linear-gradient(90deg,rgba(8,17,23,.88) 0%,rgba(8,17,23,.72) 52%,rgba(8,17,23,.3) 100%)}
+@media(max-width:600px){body:has(header.header) .promo-banner{min-height:360px}body:has(header.header) .promo-banner__img{object-position:58% center}body:has(header.header) .promo-banner__overlay{background:linear-gradient(90deg,rgba(13,27,36,.82),rgba(13,27,36,.45))}body:has(header.header) .promo-banner__inner{padding:32px 22px}}
