@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="assets/css/home.css" />
     <link rel="stylesheet" href="assets/css/design-refresh.css?v=20261017-darkfix" />
     <link rel="stylesheet" href="assets/css/estructura.css?v=20261013-estructura" />
-    <link rel="stylesheet" href="assets/css/storefront.css?v=20261029-laka-replica" />
+    <link rel="stylesheet" href="assets/css/storefront.css?v=20261031-reference-commerce" />
     <link rel="icon" href="icon.png" />
       <script type="application/ld+json">{"@context":"https://schema.org","@type":"Store","name":"La Tienda de Alex","url":"https://latiendadealex.pages.dev/","image":"https://latiendadealex.pages.dev/icon.png","address":{"@type":"PostalAddress","streetAddress":"Carrera 7 # 10-42","addressLocality":"El Rosal","addressRegion":"Cundinamarca","addressCountry":"CO"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"08:00","closes":"19:00"}],"areaServed":{"@type":"Country","name":"Colombia"},"currenciesAccepted":"COP","paymentAccepted":"Mercado Pago"}</script>
   </head>
@@ -67,6 +67,11 @@
           <img src="icon.png" alt="La Tienda de Alex" class="logo-img" />
           <span class="logo-text">LA TIENDA DE ALEX</span>
         </a>
+
+        <form class="search home-search" action="catalogo.html" method="get" role="search">
+          <input type="search" name="q" placeholder="Buscar celulares, computadores y accesorios" aria-label="Buscar productos" autocomplete="off" />
+          <button type="submit">Buscar</button>
+        </form>
 
         <nav class="main-nav" data-nav-desktop>
           <a href="index.html" class="active">Inicio</a>
