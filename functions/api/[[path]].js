@@ -76,13 +76,13 @@ async function catalogResponse(db, url, env) {
   let filtered = products.filter((product) => {
     const cats = (product.categories || []).map((item) => normalize(item.name));
     const haystack = normalize(`${product.name} ${product.brand || ''} ${cats.join(' ')} ${product.description || ''}`);
-    return (!category || cats.some((cat) => cat === category || cat.startsWith(category))
+    return (!category || cats.some((cat) => cat === category || cat.startsWith(category)))
       && (!brand || product.brand === brand)
       && Number(product.price) >= min && Number(product.price) <= max
       && (!stock || Boolean(product.available))
       && (!shipping || Number(product.price) >= shippingFrom)
       && (!offers || Number(product.compareAt) > Number(product.price))
-      && (!q || q.split(/\s+/).filter(Boolean).every((term) => haystack.includes(term))));
+      && (!q || q.split(/\s+/).filter(Boolean).every((term) => haystack.includes(term)));
   });
   if (sort === 'precio-asc') filtered.sort((a, b) => a.price - b.price);
   else if (sort === 'precio-desc') filtered.sort((a, b) => b.price - a.price);
