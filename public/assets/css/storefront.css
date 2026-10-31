@@ -609,3 +609,9 @@ body:has(header.header) .promo-banner__inner .btn-primary:hover{background:#e8ee
 body:has(header.header) .promo-banner__inner .btn-outline{background:rgba(20,36,46,.28);border-color:rgba(255,255,255,.78);color:#fff}
 html[data-theme="dark"] body:has(header.header) .promo-banner__overlay{background:linear-gradient(90deg,rgba(8,17,23,.88) 0%,rgba(8,17,23,.72) 52%,rgba(8,17,23,.3) 100%)}
 @media(max-width:600px){body:has(header.header) .promo-banner{min-height:360px}body:has(header.header) .promo-banner__img{object-position:58% center}body:has(header.header) .promo-banner__overlay{background:linear-gradient(90deg,rgba(13,27,36,.82),rgba(13,27,36,.45))}body:has(header.header) .promo-banner__inner{padding:32px 22px}}
+
+
+
+/* Baja ligeramente el encuadre de la imagen del banner promocional. */
+body:has(header.header) .promo-banner__img{object-position:50% 64%}
+@media(max-width:600px){body:has(header.header) .promo-banner__img{object-position:58% 64%}}
