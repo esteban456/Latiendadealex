@@ -425,3 +425,38 @@ body:has(header.header) .footer a:hover{color:#f2a0a4}
 @media(max-width:600px){body:has(header.header) .header-inner{min-height:64px}body:has(header.header) .logo-img{width:34px;height:34px}body:has(header.header) .logo-text{font-size:.68rem}body:has(header.header) .hero{padding-top:12px}body:has(header.header) .hero-inner{width:calc(100% - 24px);padding:22px 17px}body:has(header.header) .hero-content h1{font-size:clamp(2rem,9vw,2.65rem)}body:has(header.header) .hero-visual{gap:8px}body:has(header.header) .hero-product{grid-template-columns:54px minmax(0,1fr);padding:8px;column-gap:8px}body:has(header.header) .hero-product img{width:54px;height:58px}body:has(header.header) .hero-product-name{font-size:.68rem}body:has(header.header) .grid--promo{gap:9px}body:has(header.header) .card{padding:7px}body:has(header.header) .card-body{padding:9px 2px 3px}}
 
 
+
+
+
+/* Dirección visual madura y profesional: tecnología, confianza y claridad. */
+body:has(header.header){--accent:#3f657e;--accent-soft:#edf2f5;--brand:#1e3342;--brand-dark:#152733;--brand-soft:#edf1f3;--line:#e3e7e9;--line-soft:#eef0f1;color:#252d32;background:#fff;font-family:Arial,Helvetica,sans-serif}
+body:has(header.header) .announce-bar{background:#1e3342;color:#f6f8f9}
+body:has(header.header) .header{background:#fff;border-bottom:1px solid #e2e6e8}
+body:has(header.header) .logo-text{color:#1e3342;font-size:.8rem;font-weight:700;letter-spacing:.09em}
+body:has(header.header) .home-search{border-color:#d9dfe2;background:#f7f8f8}
+body:has(header.header) .home-search button{background:#1e3342}
+body:has(header.header) .home-search button:hover{background:#304d61}
+body:has(header.header) .nav a{color:#3b454b}
+body:has(header.header) .nav a:hover,body:has(header.header) .nav a.active{color:#3f657e}
+body:has(header.header) .hero-inner{background:#f3f5f5;border:1px solid #edf0f0}
+body:has(header.header) .hero-content h1{color:#1e3342;font-weight:600;letter-spacing:-.04em}
+body:has(header.header) .hero-content p{color:#5f696e}
+body:has(header.header) .hero-cta .btn-primary,body:has(header.header) .btn-primary,body:has(header.header) .btn-accent,body:has(header.header) .cart-checkout,body:has(header.header) [data-pay]{background:#1e3342;border-color:#1e3342;color:#fff}
+body:has(header.header) .hero-cta .btn-primary:hover,body:has(header.header) .btn-primary:hover{background:#304d61;border-color:#304d61}
+body:has(header.header) .hero-cta .btn-outline{border-color:#9ca8ad;color:#263843}
+body:has(header.header) .hero-product{border-color:#e2e6e8;box-shadow:0 2px 10px rgb(25 45 57 / 4%)}
+body:has(header.header) .hero-product img,body:has(header.header) .card-media{background:#f5f6f6}
+body:has(header.header) .section-head h2{color:#1e3342;font-weight:600}
+body:has(header.header) .section-head .eyebrow{color:#718087}
+body:has(header.header) .card{border-color:#e6e9ea}
+body:has(header.header) .card:hover{border-color:#cbd4d8;box-shadow:0 8px 22px rgb(25 45 57 / 7%)}
+body:has(header.header) .card-name{color:#37434a}
+body:has(header.header) .card-price{color:#1e3342}
+body:has(header.header) .badge,body:has(header.header) .offer-badge{background:#3f657e;color:#fff}
+body:has(header.header) .cat-card:hover{border-color:#7991a0}
+body:has(header.header) .section-trust .trust-icon{color:#3f657e}
+body:has(header.header) .promo-banner{background:#1e3342}
+body:has(header.header) .footer{background:#182a35;color:#e9eef0}
+body:has(header.header) .footer a:hover{color:#b9cbd4}
+body:has(header.header) .btn,body:has(header.header) button.button,body:has(header.header) .cart-checkout,body:has(header.header) [data-pay]{font-weight:600;letter-spacing:.01em}
+body:has(header.header) .product .price-big,body:has(header.header) .summary-total,body:has(header.header) .totals .grand{color:#1e3342}
