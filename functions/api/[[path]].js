@@ -159,6 +159,127 @@ async function adminSetup(request, env) {
   return adminSessionResponse(request, env);
 }
 
+
+const STORE_CATEGORIES = [
+  'Celulares', 'IPhone', 'Celulares Exhibición', 'Crédito Android', 'Tecnología para tu negocio',
+  'Ejercicio y salud', 'Almacenamiento', 'Accesorios Computador', 'Bebés', 'Mascotas', 'Gafas',
+  'Iluminación y decoración', 'Energía solar', 'Juguetes', 'Accesorios Motos/Carros', 'Proyectores',
+  'Portátiles y Monitores', 'Patinetas Eléctricas', 'Maquinaria', 'Juegos y Pasatiempos', 'Impresoras',
+  'Consolas y Videojuegos', 'Accesorios Celular', 'Audio y Micrófonos', 'Belleza y Cuidado Personal',
+  'Cámara de Seguridad', 'Cámara y Trípodes', 'Cargadores y Power Bank', 'Cocina', 'Tablets',
+  'Hogar', 'Smartwatch', 'Drones', 'Tu TV', 'Motos Eléctricas', 'Audífonos', 'Sonido',
+];
+const CATEGORY_ICONS = {
+  'Celulares':'📱','IPhone':'📱','Celulares Exhibición':'📱','Crédito Android':'💳',
+  'Tecnología para tu negocio':'🏪','Ejercicio y salud':'🏋️','Almacenamiento':'💾',
+  'Accesorios Computador':'🖱️','Bebés':'👶','Mascotas':'🐾','Gafas':'👓',
+  'Iluminación y decoración':'💡','Energía solar':'☀️','Juguetes':'🧸',
+  'Accesorios Motos/Carros':'🚗','Proyectores':'📽️','Portátiles y Monitores':'💻',
+  'Patinetas Eléctricas':'🛴','Maquinaria':'🛠️','Juegos y Pasatiempos':'🎲',
+  'Impresoras':'🖨️','Consolas y Videojuegos':'🎮','Accesorios Celular':'🔌',
+  'Audio y Micrófonos':'🎙️','Belleza y Cuidado Personal':'💄',
+  'Cámara de Seguridad':'🔒','Cámara y Trípodes':'📷','Cargadores y Power Bank':'🔋',
+  'Cocina':'🍳','Tablets':'📱','Hogar':'🏠','Smartwatch':'⌚','Drones':'🚁',
+  'Tu TV':'📺','Motos Eléctricas':'🏍️','Audífonos':'🎧','Sonido':'🔊',
+};
+const CANONICAL_CATEGORY = new Map(STORE_CATEGORIES.map((name) => [normalize(name), name]));
+const LEGACY_CATEGORY_FALLBACK = new Map([
+  ['celulares y smartphones','Celulares'],['audio y microfonos','Audio y Micrófonos'],
+  ['hogar y electrodomesticos','Hogar'],['accesorios de computador','Accesorios Computador'],
+  ['motos y vehiculos','Accesorios Motos/Carros'],['belleza y cuidado personal','Belleza y Cuidado Personal'],
+  ['herramientas y maquineria','Maquinaria'],['monitores y televisores','Portátiles y Monitores'],
+  ['camaras y fotografia','Cámara y Trípodes'],['gaming y consolas','Consolas y Videojuegos'],
+  ['iluminacion y energia','Iluminación y decoración'],['smartwatches y relojes','Smartwatch'],
+  ['juguetes y diversion','Juguetes'],['tablets y ipads','Tablets'],
+  ['accesorios de celular','Accesorios Celular'],['impresoras y escaneres','Impresoras'],
+  ['seguridad y domotica','Cámara de Seguridad'],['deportes y fitness','Ejercicio y salud'],
+  ['portatiles y macbooks','Portátiles y Monitores'],['papeleria y otros','Juegos y Pasatiempos'],
+]);
+function classifyStoredProduct(product) {
+  const oldCategory = normalize(product.categories?.[0]?.name || product.category || '');
+  const alreadyCanonical = CANONICAL_CATEGORY.get(oldCategory);
+  if (alreadyCanonical) return alreadyCanonical;
+  const name = normalize(product.name || '');
+  const brand = normalize(product.brand || '');
+  const phoneCategory = /celulares y smartphones|celulares exhibicion|credito android|^celulares$/.test(oldCategory);
+  const knownPhoneBrand = /samsung|xiaomi|redmi|poco|oppo|motorola|realme|vivo|tecno|infinix|honor|huawei|oneplus|zte|google pixel/.test(`${name} ${brand}`);
+  const phoneSpec = /\b\d+\s?gb\s*\+\s?\d+\s?gb\b|\bdual sim\b|\bsingle sim\b/.test(name);
+  const accessoryCategory = /accesorios de celular/.test(oldCategory);
+  const genericPhoneModel = (accessoryCategory || /otros productos/.test(oldCategory)) && phoneSpec && !/laptop|notebook|tablet|monitor|ssd|disco duro|impresora|camara|reloj|parlante|televisor|\btv\b/.test(name);
+  const phoneModel = phoneCategory || /celular|smartphone|iphone/.test(name) || (knownPhoneBrand && /\b\d{2,4}\s?(gb|tb)\b|\b\d{1,2}\s?\+\s?\d{2,4}\s?(gb|tb)\b/.test(name)) || genericPhoneModel;
+  const phoneAccessory = /funda|carcasa|case|protector|vidrio templado|soporte para celular|soporte celular|holder celular|pop socket/.test(name) && (phoneCategory || accessoryCategory || /celular|smartphone|iphone|telefono/.test(name));
+  if (/cargador|carga rapida|power bank|bateria externa|cable usb|cable tipo c|adaptador de corriente/.test(name)) return 'Cargadores y Power Bank';
+  if (phoneAccessory || (accessoryCategory && !phoneModel)) return 'Accesorios Celular';
+  if (/exhibicion|exhibicion|vitrina/.test(name) && phoneModel) return 'Celulares Exhibición';
+  if (phoneModel && (/iphone|apple/.test(name) || (brand === 'apple' && phoneCategory))) return 'IPhone';
+  if (/credito android/.test(oldCategory) || /credito android/.test(name)) return 'Crédito Android';
+  if (/ipad|tablet|galaxy tab|lenovo tab|redmi pad/.test(name) || /tablets y ipads/.test(oldCategory)) return 'Tablets';
+  if (phoneModel) return 'Celulares';
+  if (/audifono|auricular|headphone|earbud|airpods|earphone|headset/.test(name)) return 'Audífonos';
+  if (/parlante|altavoz|bocina|soundbar|barra de sonido|amplificador|subwoofer/.test(name)) return 'Sonido';
+  if (/microfono|microphone|mezcladora|mezclador de audio|interfaz de audio/.test(name)) return 'Audio y Micrófonos';
+  if (/ssd|disco duro|memoria usb|micro ?sd|tarjeta de memoria|pendrive|memoria flash/.test(name)) return 'Almacenamiento';
+  if (/proyector|projector/.test(name)) return 'Proyectores';
+  if (/impresora|printer|plotter|escaner|scanner/.test(name)) return 'Impresoras';
+  if (/camara|cctv|vigilancia|seguridad|sensor de movimiento|alarma|control de acceso/.test(name) && (/seguridad|cctv|vigilancia|alarma|domotica|camara de seguridad/.test(`${name} ${oldCategory}`))) return 'Cámara de Seguridad';
+  if (/camara|tripode|trípode|lente fotograf|gopro|aro de luz|ring light/.test(name) || /camaras y fotografia/.test(oldCategory)) return 'Cámara y Trípodes';
+  if (/dron|drone/.test(name)) return 'Drones';
+  if (/patineta electrica|scooter electrico|scooter electrica/.test(name)) return 'Patinetas Eléctricas';
+  if (/moto electrica|motocicleta electrica|bicicleta electrica/.test(name)) return 'Motos Eléctricas';
+  if (/tv\b|televisor|smart ?tv|led \d{2,3}|qled|oled/.test(name) || /monitores y televisores/.test(oldCategory) && /televisor|tv|smart ?tv/.test(name)) return 'Tu TV';
+  if (/portatil|laptop|notebook|macbook|monitor\b|pantalla para pc/.test(name) || /portatiles y macbooks/.test(oldCategory)) return 'Portátiles y Monitores';
+  if (/punto de venta|\bpos\b|lector de codigo|codigo de barras|caja registradora|terminal de venta|etiquetadora/.test(name)) return 'Tecnología para tu negocio';
+  if (/panel solar|energia solar|inversor solar|reflector solar|lampara solar/.test(name)) return 'Energía solar';
+  if (/taladro|pulidora|motosierra|rotomartillo|llave de impacto|soldadora|compresor|maquina|maquinaria|herramienta/.test(name) || /herramientas y maquineria/.test(oldCategory)) return 'Maquinaria';
+  if (/mancuerna|caminadora|trotadora|bicicleta estatica|ejercicio|fitness|masajeador|tens|yoga|pesas/.test(name) || /deportes y fitness/.test(oldCategory)) return 'Ejercicio y salud';
+  if (/bebe|biberon|pañal|coche para bebe|silla para bebe|extractor de leche/.test(name)) return 'Bebés';
+  if (/mascota|perro|gato|comedero|correa para perro|arenero/.test(name)) return 'Mascotas';
+  if (/gafa|lente de sol|anteojo/.test(name)) return 'Gafas';
+  if (/maquillaje|afeitadora|depiladora|secador de cabello|plancha para cabello|cuidado personal|skin care|masaje facial/.test(name) || /belleza y cuidado personal/.test(oldCategory)) return 'Belleza y Cuidado Personal';
+  if (/freidora|air fryer|licuadora|cafetera|microondas|olla|horno|sarten|estufa|cocina|sanduchera|tostadora/.test(name)) return 'Cocina';
+  if (/bombillo|lampara|luminaria|iluminacion|decoracion|guirnalda|luz led|aro led|reflector/.test(name) || /iluminacion y energia/.test(oldCategory)) return 'Iluminación y decoración';
+  if (/juguete|muñec|carro a control|figura coleccionable/.test(name) || /juguetes y diversion/.test(oldCategory)) return 'Juguetes';
+  if (/juego de mesa|rompecabezas|cartas coleccionables|pasatiempo|ajedrez/.test(name)) return 'Juegos y Pasatiempos';
+  if (/playstation|ps[345]\b|xbox|nintendo|switch|consola|videojuego|control gamer/.test(name) || /gaming y consolas/.test(oldCategory)) return 'Consolas y Videojuegos';
+  if (/smart ?watch|smartwatch|reloj inteligente|fit ?[0-9]|band [0-9]/.test(name) || /smartwatches y relojes/.test(oldCategory)) return 'Smartwatch';
+  if (/cargador de carro|accesorio para moto|accesorio para carro|casco para moto|soporte para moto|soporte para carro|compresor de llantas/.test(name) || /motos y vehiculos/.test(oldCategory)) return 'Accesorios Motos/Carros';
+  if (/mouse|teclado|webcam|hub usb|base para monitor|soporte para monitor|maletin para laptop|adaptador hdmi|accesorios de computador/.test(name) || /accesorios de computador/.test(oldCategory)) return 'Accesorios Computador';
+  if (/electrodomestico|aire acondicionado|ventilador|aspiradora|mueble|colchon|limpieza del hogar/.test(name) || /hogar y electrodomesticos/.test(oldCategory)) return 'Hogar';
+  if (/gaming|consola|videojuego|juego/.test(name)) return 'Juegos y Pasatiempos';
+  return LEGACY_CATEGORY_FALLBACK.get(oldCategory) || null;
+}
+async function reclassifyStoredProducts(db) {
+  if (!db) return json({ error: 'Falta vincular la base de datos D1 (DB).' }, 503);
+  const rows = (await db.prepare('SELECT id, data FROM products').all()).results || [];
+  const updates = [];
+  const counts = {};
+  const unclassifiedExamples = [];
+  let unchanged = 0;
+  for (const row of rows) {
+    const product = JSON.parse(row.data);
+    const category = classifyStoredProduct(product);
+    if (!category) {
+      if (unclassifiedExamples.length < 12) unclassifiedExamples.push({ name: product.name, category: product.categories?.[0]?.name || 'Sin categoría' });
+      continue;
+    }
+    const current = product.categories?.[0]?.name || product.category || '';
+    if (normalize(current) === normalize(category) && product.categories?.length === 1) { unchanged++; continue; }
+    product.categoriesBeforeTaxonomyUpdate ||= JSON.parse(JSON.stringify(product.categories || []));
+    if (Object.prototype.hasOwnProperty.call(product, 'category')) product.categoryBeforeTaxonomyUpdate ||= product.category;
+    product.categories = [{ name: category, icon: CATEGORY_ICONS[category] || '📦' }];
+    if (Object.prototype.hasOwnProperty.call(product, 'category')) product.category = category;
+    updates.push({ id: row.id, data: JSON.stringify(product), category });
+    counts[category] = (counts[category] || 0) + 1;
+  }
+  for (let i = 0; i < updates.length; i += 200) {
+    const batch = updates.slice(i, i + 200).map((product) =>
+      db.prepare('UPDATE products SET data = ? WHERE id = ?').bind(product.data, product.id));
+    await db.batch(batch);
+  }
+  if (updates.length) await refreshCatalogMeta(db);
+  return json({ ok: true, total: rows.length, updated: updates.length, unchanged, unclassified: unclassifiedExamples, unclassifiedTotal: rows.length - updates.length - unchanged, counts, unclassifiedExamples });
+}
+
 async function adminApi(request, url, env) {
   if (!(await verifyAdminSession(request, env))) return json({ error: 'Inicia sesión como administrador.' }, 401);
   let body = {};
@@ -174,6 +295,10 @@ async function adminApi(request, url, env) {
       const detail = String(error?.message || error || 'Error desconocido').slice(0, 300);
       return json({ error: 'No se pudo consultar el catálogo en D1.', detail }, 500);
     }
+  }
+  if (request.method === 'POST' && url.pathname === '/api/admin/categories/reclassify') {
+    try { return await reclassifyStoredProducts(env.DB); }
+    catch (error) { console.error('reclassify categories error:', error); return json({ error: 'No se pudieron clasificar las categorías. ' + String(error?.message || error).slice(0, 220) }, 500); }
   }
   if (request.method === 'GET' && url.pathname === '/api/admin/orders') return adminListOrders(env.DB, url);
   if (request.method === 'POST' && url.pathname === '/api/admin/orders/status') return adminUpdateOrderStatus(env.DB, body);

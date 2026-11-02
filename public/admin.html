@@ -146,7 +146,7 @@
       <div id="admin-notice-app" class="notice" role="status" hidden></div>
       <div id="product-section" class="product-section">
       <header class="section-title"><span class="section-kicker">CATALOGO</span><h2>Productos</h2><p>Administra precios, inventario y disponibilidad.</p></header>
-      <section class="toolbar"><input id="product-search" class="search" type="search" placeholder="Buscar por nombre, marca, categoría o ID…" /><button id="new-product" class="button">＋ Agregar producto</button></section>
+      <section class="toolbar"><input id="product-search" class="search" type="search" placeholder="Buscar por nombre, marca, categoría o ID…" /><button id="reclassify-categories" class="button secondary" type="button">Clasificar productos</button><button id="new-product" class="button">＋ Agregar producto</button></section>
       <section class="admin-filters" aria-label="Filtros del catálogo">
         <select id="category-filter" aria-label="Filtrar por categoría"><option value="">Todas las categorías</option></select>
         <select id="stock-filter" aria-label="Filtrar por inventario"><option value="">Todo el inventario</option><option value="available">Con existencias</option><option value="low">Pocas existencias (1 a 3)</option><option value="out">Agotados</option><option value="no-image">Sin imagen</option></select>
@@ -257,7 +257,7 @@
         </form>
       </section>
     </div>
-    <script src="assets/js/admin.js?v=20261102-phone-hub-layer" defer></script>
+    <script src="assets/js/admin.js?v=20261102-reclassify-products" defer></script>
     <script src="assets/js/bulk-images.js?v=20261026-no-bg-removal" defer></script>
   </body>
 </html>

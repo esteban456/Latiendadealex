@@ -272,6 +272,31 @@ $('#logout-button').addEventListener('click', async () => {
   showLogin();
 });
 
+$('#reclassify-categories').addEventListener('click', async () => {
+  const button = $('#reclassify-categories');
+  if (button.disabled) return;
+  button.disabled = true;
+  const oldText = button.textContent;
+  button.textContent = 'Clasificando…';
+  notice('Clasificando productos según su nombre, marca y categoría actual…');
+  try {
+    const result = await request('/api/admin/categories/reclassify', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ csrf: state.csrf }),
+    });
+    const countSummary = Object.entries(result.counts || {}).map(([name, count]) => `${name}: ${count}`).join(' · ');
+    const remaining = result.unclassifiedTotal || 0;
+    const examples = (result.unclassifiedExamples || []).slice(0, 3).map((product) => product.name).join(', ');
+    const pendingText = remaining ? ` ${remaining} quedaron pendientes de revisión.${examples ? ` Ejemplos: ${examples}.` : ''}` : '';
+    notice(`Listo: ${result.updated} productos clasificados.${pendingText}${countSummary ? ` Categorías: ${countSummary}` : ''}`, remaining ? '' : 'success');
+    await loadProducts();
+  } catch (error) {
+    notice(error.message, 'error');
+  } finally {
+    button.disabled = false;
+    button.textContent = oldText;
+  }
+});
 $('#new-product').addEventListener('click', () => showEditor());
 $('#cancel-editor').addEventListener('click', hideEditor);
 $('#close-editor').addEventListener('click', hideEditor);
