@@ -1,5 +1,6 @@
 const $ = (selector) => document.querySelector(selector);
 const state = { csrf: '', offset: 0, limit: 50, total: 0, search: '', category: '', stock: '', categories: [], uploadingImage: false };
+let productImages = [];
 const authView = $('#admin-login-view');
 const appView = $('#admin-app');
 const productForm = $('#product-form');
@@ -216,11 +217,16 @@ function showEditor(product = null) {
   $('#field-image-background').value = product?.imageBackground || 'phone-ice';
   syncImageBackgroundField();
   $('#field-description').value = product?.description || '';
-  $('#field-image').value = product?.image || '';
-  $('#image-url-input').value = /^https?:\/\//i.test(product?.image || '') ? product.image : '';
-  $('#image-preview').src = product?.image || '';
-  $('#image-preview').hidden = !product?.image;
+  productImages = [...new Set((product?.images?.length ? product.images : (product?.image ? [product.image] : [])).filter(Boolean))].slice(0, 8);
+  $('#field-image').value = productImages[0] || '';
+  $('#image-preview').src = productImages[0] || '';
+  $('#image-preview').hidden = !productImages[0];
   $('#image-file').value = '';
+  $('#image-search-query').value = [product?.brand, product?.name].filter(Boolean).join(' ');
+  $('#image-search-query').dataset.touched = '';
+  $('#image-search-status').textContent = '';
+  $('#image-search-results').innerHTML = '';
+  renderProductImageGallery();
   $('#category-options').innerHTML = state.categories.map((category) => `<option value="${escapeHtml(category.name)}"></option>`).join('');
   editor.hidden = false;
   document.body.classList.add('modal-open');
@@ -473,7 +479,7 @@ async function uploadProductImage(file) {
   if (!file.type.startsWith('image/')) return notice('Selecciona una imagen JPG, PNG o WebP.', 'error');
   if (file.size > 15 * 1024 * 1024) return notice('La foto supera 15 MB. Redúcela o elige una más pequeña.', 'error');
   const saveButton = $('#save-product');
-  const existingImage = $('#field-image').value;
+  const existingImage = productImages[0] || '';
   let localPreviewReady = false;
   state.uploadingImage = true;
   saveButton.disabled = true;
@@ -527,7 +533,7 @@ async function uploadProductImage(file) {
       if (error.name === 'AbortError') throw new Error('La subida tardó más de 45 segundos y se canceló. Puedes guardar el producto sin imagen e intentarlo luego.');
       throw error;
     } finally { clearTimeout(uploadTimeout); }
-    $('#field-image').value = uploaded.image;
+    addProductImage(uploaded.image);
     notice(isPhone ? 'Imagen compuesta con el fondo seleccionado y Hub; el celular quedó centrado. Guarda el producto para aplicar los cambios.' : 'Imagen subida y centrada sobre la plantilla. Guarda el producto para aplicar los cambios.', 'success');
   } catch (error) {
     if (!localPreviewReady) {
@@ -543,32 +549,57 @@ async function uploadProductImage(file) {
   }
 }
 const imageDropZone = $('.image-row');
-function updateImageSearchLinks() {
-  const query = [$('#field-brand').value.trim(), $('#field-name').value.trim()].filter(Boolean).join(' ') || 'producto';
-  const encoded = encodeURIComponent(query);
-  $('#image-search-google').href = `https://www.google.com/search?tbm=isch&q=${encoded}`;
-  $('#image-search-bing').href = `https://www.bing.com/images/search?q=${encoded}`;
-  $('#image-search-mercadolibre').href = `https://listado.mercadolibre.com.co/${encodeURIComponent(query.replace(/\s+/g, '-'))}`;
-  $('#image-search-aliexpress').href = `https://www.aliexpress.com/wholesale?SearchText=${encoded}`;
+function renderProductImageGallery() {
+  const gallery = $('#image-gallery');
+  if (!gallery) return;
+  $('#image-gallery-count').textContent = `${productImages.length} de 8`;
+  $('#field-image').value = productImages[0] || '';
+  $('#image-preview').src = productImages[0] || '';
+  $('#image-preview').hidden = !productImages[0];
+  gallery.innerHTML = productImages.map((src, index) => `<div class="image-gallery-item ${index === 0 ? 'is-primary' : ''}"><img src="${escapeHtml(src)}" alt="Foto ${index + 1}" loading="lazy" /><div><button type="button" data-gallery-primary="${index}">${index === 0 ? 'Principal' : 'Hacer principal'}</button><button type="button" data-gallery-remove="${index}">Quitar</button></div></div>`).join('');
 }
-$('#field-name').addEventListener('input', updateImageSearchLinks);
-$('#field-brand').addEventListener('input', updateImageSearchLinks);
-$('#use-image-url').addEventListener('click', () => {
-  const value = $('#image-url-input').value.trim();
-  let parsed;
-  try { parsed = new URL(value); } catch { return notice('Pega un enlace válido a una imagen.', 'error'); }
-  if (!['http:', 'https:'].includes(parsed.protocol)) return notice('El enlace de imagen debe comenzar con http o https.', 'error');
-  $('#field-image').value = parsed.href;
-  $('#image-preview').src = parsed.href;
-  $('#image-preview').hidden = false;
-  notice('Imagen seleccionada. Guarda el producto para aplicar el enlace.', 'success');
+function addProductImage(src) {
+  if (!src || productImages.includes(src)) return;
+  if (productImages.length >= 8) return notice('La galería admite hasta 8 fotos.', 'error');
+  productImages.push(src);
+  renderProductImageGallery();
+  notice('Foto agregada a la galería. Guarda el producto para conservarla.', 'success');
+}
+$('#image-gallery').addEventListener('click', (event) => {
+  const primary = event.target.closest('[data-gallery-primary]');
+  const remove = event.target.closest('[data-gallery-remove]');
+  if (primary) { const [item] = productImages.splice(Number(primary.dataset.galleryPrimary), 1); productImages.unshift(item); }
+  else if (remove) productImages.splice(Number(remove.dataset.galleryRemove), 1);
+  renderProductImageGallery();
 });
-$('#image-preview').addEventListener('error', () => {
-  if ($('#image-url-input').value.trim()) notice('No se pudo mostrar esa imagen. Prueba con el enlace directo al archivo o sube una imagen desde tu PC.', 'error');
+async function searchProductImages() {
+  const query = $('#image-search-query').value.trim() || [$('#field-brand').value, $('#field-name').value].filter(Boolean).join(' ');
+  if (!query) return notice('Escribe el nombre del producto que quieres buscar.', 'error');
+  const button = $('#search-product-images');
+  button.disabled = true;
+  $('#image-search-status').textContent = 'Buscando publicaciones y sus fotos…';
+  $('#image-search-results').innerHTML = '';
+  try {
+    const data = await request(`/api/admin/image-search?q=${encodeURIComponent(query)}`);
+    if (!data.results?.length) { $('#image-search-status').textContent = data.message || 'No encontramos fotos. Prueba con marca y modelo.'; return; }
+    $('#image-search-status').textContent = 'Pulsa una foto para agregarla a la galería.';
+    $('#image-search-results').innerHTML = data.results.map((item) => `<article class="image-search-card"><strong>${escapeHtml(item.title)}</strong><div class="image-search-thumbnails">${item.images.map((src) => `<button type="button" data-image-candidate="${escapeHtml(src)}"><img src="${escapeHtml(src)}" loading="lazy" alt="${escapeHtml(item.title)}" /></button>`).join('')}</div>${item.permalink ? `<a href="${escapeHtml(item.permalink)}" target="_blank" rel="noopener noreferrer">Ver publicación</a>` : ''}</article>`).join('');
+  } catch (error) { $('#image-search-status').textContent = error.message || 'No se pudieron cargar las fotos.'; }
+  finally { button.disabled = false; }
+}
+$('#field-name').addEventListener('input', () => { if (!$('#image-search-query').dataset.touched) $('#image-search-query').value = [$('#field-brand').value, $('#field-name').value].filter(Boolean).join(' '); });
+$('#field-brand').addEventListener('input', () => { if (!$('#image-search-query').dataset.touched) $('#image-search-query').value = [$('#field-brand').value, $('#field-name').value].filter(Boolean).join(' '); });
+$('#image-search-query').addEventListener('input', () => { $('#image-search-query').dataset.touched = '1'; });
+$('#search-product-images').addEventListener('click', searchProductImages);
+$('#image-search-query').addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); searchProductImages(); } });
+$('#image-search-results').addEventListener('click', (event) => {
+  const image = event.target.closest('[data-image-candidate]');
+  if (image) addProductImage(image.dataset.imageCandidate);
 });
 $('#image-file').addEventListener('change', async (event) => {
-  await uploadProductImage(event.target.files?.[0]);
+  const files = [...(event.target.files || [])];
   event.target.value = '';
+  for (const file of files) await uploadProductImage(file);
 });
 
 imageDropZone.addEventListener('dragenter', (event) => {
@@ -590,8 +621,8 @@ imageDropZone.addEventListener('drop', async (event) => {
   if (!file) {
     const droppedUrl = (event.dataTransfer?.getData('text/uri-list') || event.dataTransfer?.getData('text/plain') || '').split(/\r?\n/).find((item) => /^https?:\/\//i.test(item.trim()))?.trim();
     if (droppedUrl) {
-      $('#image-url-input').value = droppedUrl;
-      return $('#use-image-url').click();
+      addProductImage(droppedUrl);
+      return;
     }
     return notice('No se recibió una imagen. Prueba arrastrarla, pegar su enlace directo o subirla desde tu PC.', 'error');
   }
@@ -631,7 +662,7 @@ productForm.addEventListener('submit', async (event) => {
     creditPrice: $('#field-credit-enabled').checked ? Number($('#field-credit-price').value || $('#field-price').value) : null,
     stock: Number($('#field-stock').value), category,
     imageBackground: isAndroidPhoneCategory(category, $('#field-brand').value, name) ? $('#field-image-background').value : '',
-    description: $('#field-description').value, image: $('#field-image').value, csrf: state.csrf,
+    description: $('#field-description').value, image: productImages[0] || '', images: productImages, csrf: state.csrf,
   };
   const saveController = new AbortController();
   const saveTimeout = setTimeout(() => saveController.abort(), 30_000);

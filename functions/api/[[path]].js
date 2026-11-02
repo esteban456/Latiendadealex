@@ -287,6 +287,7 @@ async function adminApi(request, url, env) {
     body = await readJson(request, url.pathname.endsWith('/upload') ? 5_500_000 : 1_000_000);
     if (!body.csrf || body.csrf !== getCookie(request, 'admin_csrf')) return json({ error: 'La sesión expiró. Vuelve a iniciar sesión.' }, 403);
   }
+  if (request.method === 'GET' && url.pathname === '/api/admin/image-search') return searchMercadoLibreImages(url.searchParams.get('q') || '', env);
   if (request.method === 'GET' && url.pathname === '/api/admin/products') {
     try {
       return await adminList(env.DB, url, env);
@@ -394,6 +395,37 @@ function priceForCost(cost) {
   return { contado: round(contado), credito: round(credito) };
 }
 
+async function searchMercadoLibreImages(query, env) {
+  const cleanQuery = String(query || '').trim().slice(0, 120);
+  if (!cleanQuery) return json({ results: [], message: 'Escribe el producto que quieres buscar.' });
+  if (!env.MELI_ACCESS_TOKEN) return json({ error: 'Configura MELI_ACCESS_TOKEN en los secretos de Cloudflare para buscar fotos de Mercado Libre.' }, 503);
+  const headers = { Accept: 'application/json', Authorization: `Bearer ${env.MELI_ACCESS_TOKEN}` };
+  try {
+    const searchUrl = new URL('https://api.mercadolibre.com/sites/MCO/search');
+    searchUrl.searchParams.set('q', cleanQuery);
+    searchUrl.searchParams.set('limit', '6');
+    const searchResponse = await fetch(searchUrl, { headers });
+    if (!searchResponse.ok) return json({ error: 'Mercado Libre no permitió buscar ahora. Intenta de nuevo en un momento.' }, 502);
+    const searchData = await searchResponse.json();
+    const items = (searchData.results || []).slice(0, 6);
+    const results = await Promise.all(items.map(async (item) => {
+      try {
+        const detailResponse = await fetch(`https://api.mercadolibre.com/items/${encodeURIComponent(item.id)}`, { headers });
+        const detail = detailResponse.ok ? await detailResponse.json() : item;
+        const images = [...new Set((detail.pictures || []).map((picture) => picture.secure_url || picture.url).filter((src) => {
+          try { const parsed = new URL(src); return parsed.protocol === 'https:' && /(^|\.)mlstatic\.com$/i.test(parsed.hostname); } catch { return false; }
+        }))].slice(0, 4);
+        if (!images.length && item.thumbnail && /^https:\/\//i.test(item.thumbnail) && /(^|\.)mlstatic\.com$/i.test(new URL(item.thumbnail).hostname)) images.push(item.thumbnail);
+        return { title: detail.title || item.title || 'Producto', permalink: detail.permalink || item.permalink || '', images };
+      } catch { return null; }
+    }));
+    return json({ results: results.filter((item) => item?.images.length) });
+  } catch (error) {
+    console.error('Mercado Libre image search:', error);
+    return json({ error: 'No se pudo conectar con la búsqueda de imágenes.' }, 502);
+  }
+}
+
 async function adminSave(db, body) {
   if (!db) return json({ error: 'Falta vincular la base de datos D1 (DB).' }, 503);
   const name = clean(body.name, 180);
@@ -416,7 +448,12 @@ async function adminSave(db, body) {
     ? requestedImageBackground
     : (allowedImageBackgrounds.includes(previous.imageBackground) ? previous.imageBackground : 'phone-ice');
   const slug = clean(body.slug, 180) || normalize(name).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 160);
-  const image = clean(body.image, 600);
+  const requestedImages = Array.isArray(body.images) ? body.images : null;
+  const images = requestedImages
+    ? [...new Set(requestedImages.map((item) => clean(item, 600)).filter(Boolean))].slice(0, 8)
+    : (clean(body.image, 600) ? [clean(body.image, 600)] : (previous.images?.length ? previous.images.slice(0, 8) : (previous.image ? [previous.image] : [])));
+  const requestedPrimary = clean(body.image, 600);
+  const image = requestedPrimary && images.includes(requestedPrimary) ? requestedPrimary : (images[0] || '');
   const cashVariant = previous.variants?.find((variant) => /contado/i.test(variant.label)) || previous.variants?.[0];
   const creditVariant = previous.variants?.find((variant) => /credito/i.test(variant.sku) || /cr.dito/i.test(variant.label));
   const cashSku = cashVariant?.sku || `admin-${crypto.randomUUID().slice(0, 12)}-contado`;
@@ -433,7 +470,7 @@ async function adminSave(db, body) {
     brand: clean(body.brand, 100), description: clean(body.description, 5000), price,
     cost: hasCost ? cost : (Number(previous.cost) || undefined),
     maxPrice: offerCredit ? creditPrice : price, compareAt: priced ? price : (Number(previous.compareAt) || price),
-    image, images: image ? [image] : [], imageBackground, categories: [{ name: category, icon: categoryIcon }], variants,
+    image, images, imageBackground, categories: [{ name: category, icon: categoryIcon }], variants,
     available: stock > 0, stock, specs: previous.specs || {}, tags: previous.tags || [], source: previous.source || 'panel-admin',
   };
   product.variants = paymentVariants;
