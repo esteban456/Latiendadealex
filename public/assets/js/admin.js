@@ -460,12 +460,19 @@ async function uploadProductImage(file) {
     const templateResponse = await fetch(templatePath, { cache: 'force-cache' });
     if (!templateResponse.ok) throw new Error('No se encontró la plantilla de imagen.');
     const templateBitmap = await createImageBitmap(await templateResponse.blob());
+    let hubBitmap = null;
+    if (isPhone) {
+      const hubResponse = await fetch('/assets/img/plantilla/Hub.png', { cache: 'force-cache' });
+      if (!hubResponse.ok) throw new Error('No se encontró la capa Hub para los fondos de celular.');
+      hubBitmap = await createImageBitmap(await hubResponse.blob());
+    }
     const productBitmap = await createImageBitmap(file, { resizeWidth: 1400, resizeQuality: 'high' });
     const canvas = document.createElement('canvas');
     canvas.width = templateBitmap.width;
     canvas.height = templateBitmap.height;
     const context = canvas.getContext('2d');
     context.drawImage(templateBitmap, 0, 0, canvas.width, canvas.height);
+    if (hubBitmap) context.drawImage(hubBitmap, 0, 0, canvas.width, canvas.height);
     const maxWidth = canvas.width * 0.72;
     const maxHeight = canvas.height * 0.43;
     const scale = Math.min(maxWidth / productBitmap.width, maxHeight / productBitmap.height);
@@ -476,6 +483,7 @@ async function uploadProductImage(file) {
     context.drawImage(productBitmap, x, y, productWidth, productHeight);
     productBitmap.close();
     templateBitmap.close();
+    hubBitmap?.close();
     const dataUrl = canvas.toDataURL('image/webp', 0.78);
     if (dataUrl.length > 5_300_000) throw new Error('La imagen sigue siendo muy pesada. Prueba con otra más pequeña.');
     $('#image-preview').src = dataUrl;
@@ -495,7 +503,7 @@ async function uploadProductImage(file) {
       throw error;
     } finally { clearTimeout(uploadTimeout); }
     $('#field-image').value = uploaded.image;
-    notice('Imagen subida y compuesta sobre la plantilla seleccionada. Guarda el producto para aplicar los cambios.', 'success');
+    notice(isPhone ? 'Imagen compuesta con el fondo seleccionado y Hub; el celular quedó centrado. Guarda el producto para aplicar los cambios.' : 'Imagen subida y centrada sobre la plantilla. Guarda el producto para aplicar los cambios.', 'success');
   } catch (error) {
     if (!localPreviewReady) {
       $('#image-preview').src = existingImage;
