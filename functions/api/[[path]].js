@@ -287,7 +287,7 @@ async function adminApi(request, url, env) {
     body = await readJson(request, url.pathname.endsWith('/upload') ? 5_500_000 : 1_000_000);
     if (!body.csrf || body.csrf !== getCookie(request, 'admin_csrf')) return json({ error: 'La sesión expiró. Vuelve a iniciar sesión.' }, 403);
   }
-  if (request.method === 'GET' && url.pathname === '/api/admin/image-search') return searchOpenverseImages(url.searchParams.get('q') || '');
+  if (request.method === 'GET' && url.pathname === '/api/admin/image-search') return searchCommonsImages(url.searchParams.get('q') || '');
   if (request.method === 'GET' && url.pathname === '/api/admin/products') {
     try {
       return await adminList(env.DB, url, env);
@@ -395,36 +395,52 @@ function priceForCost(cost) {
   return { contado: round(contado), credito: round(credito) };
 }
 
-async function searchOpenverseImages(query) {
+async function searchCommonsImages(query) {
   const cleanQuery = String(query || '').trim().slice(0, 120);
   if (!cleanQuery) return json({ results: [], message: 'Escribe el producto que quieres buscar.' });
   try {
-    const searchUrl = new URL('https://api.openverse.org/v1/images/');
-    searchUrl.searchParams.set('q', cleanQuery);
-    searchUrl.searchParams.set('page_size', '12');
-    searchUrl.searchParams.set('mature', 'false');
-    const response = await fetch(searchUrl, { headers: { Accept: 'application/json' } });
-    if (!response.ok) {
-      if (response.status === 429) return json({ error: 'El buscador de imágenes está temporalmente limitado. Intenta más tarde.' }, 429);
-      return json({ error: 'El buscador abierto de imágenes no respondió. Intenta de nuevo.' }, 502);
-    }
+    const endpoint = new URL('https://commons.wikimedia.org/w/api.php');
+    const params = {
+      action: 'query', generator: 'search', gsrsearch: cleanQuery,
+      gsrnamespace: '6', gsrlimit: '12', prop: 'imageinfo',
+      iiprop: 'url|extmetadata|mime', iiextmetadatafilter: 'LicenseShortName|Artist',
+      iiurlwidth: '1200', format: 'json', formatversion: '2',
+    };
+    for (const [key, value] of Object.entries(params)) endpoint.searchParams.set(key, value);
+    const response = await fetch(endpoint, {
+      headers: {
+        Accept: 'application/json',
+        'User-Agent': 'LaTiendaDeAlex/1.0 (product image search; admin panel)',
+      },
+      signal: AbortSignal.timeout(12000),
+    });
+    if (!response.ok) return json({ error: `Wikimedia Commons respondió con error ${response.status}. Intenta de nuevo.` }, 502);
     const data = await response.json();
-    const results = (data.results || []).map((item) => {
-      const image = item.url || item.thumbnail;
+    const results = (data.query?.pages || []).map((page) => {
+      const info = page.imageinfo?.[0];
+      if (!info?.mime?.startsWith('image/')) return null;
+      const image = info?.thumburl || info?.url;
       try {
         if (!image || new URL(image).protocol !== 'https:') return null;
       } catch { return null; }
+      const metadata = info.extmetadata || {};
+      const plain = (value) => String(value || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&').trim();
+      const license = plain(metadata.LicenseShortName?.value);
+      const artist = plain(metadata.Artist?.value);
       return {
-        title: clean(item.title || 'Foto relacionada', 180),
-        permalink: item.foreign_landing_url || item.detail_url || '',
+        title: clean(String(page.title || 'Imagen').replace(/^File:/, ''), 180),
+        permalink: info.descriptionurl || '',
         images: [image],
-        attribution: clean(item.attribution || `${item.license || 'Licencia no indicada'} · ${item.creator || 'Autor no indicado'}`, 500),
+        attribution: clean([artist, license].filter(Boolean).join(' · ') || 'Consulta la licencia en la fuente', 500),
       };
     }).filter(Boolean);
-    return json({ results });
+    return json({ results, message: 'No encontramos imágenes con esos términos. Prueba con marca, modelo o palabras más generales.' });
   } catch (error) {
-    console.error('Openverse image search:', error);
-    return json({ error: 'No se pudo conectar con el buscador abierto de imágenes.' }, 502);
+    console.error('Wikimedia Commons image search:', error);
+    const message = error?.name === 'TimeoutError' || error?.name === 'AbortError'
+      ? 'La búsqueda tardó demasiado. Intenta de nuevo.'
+      : 'No se pudo conectar con Wikimedia Commons. Intenta de nuevo.';
+    return json({ error: message }, 502);
   }
 }
 
