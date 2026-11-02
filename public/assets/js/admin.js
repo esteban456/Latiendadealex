@@ -581,9 +581,9 @@ async function searchProductImages() {
   $('#image-search-results').innerHTML = '';
   try {
     const data = await request(`/api/admin/image-search?q=${encodeURIComponent(query)}`);
-    if (!data.results?.length) { $('#image-search-status').textContent = data.message || 'No encontramos imágenes. Prueba con marca, modelo o palabras más generales.'; return; }
+    if (!data.results?.length) { $('#image-search-status').textContent = data.message || 'No encontramos imágenes transparentes. Prueba con marca, modelo y referencia.'; return; }
     $('#image-search-status').textContent = 'Pulsa una imagen para agregarla. La transparencia real depende del archivo; revisa que el producto coincida.';
-    $('#image-search-results').innerHTML = data.results.map((item) => `<article class="image-search-card"><strong>${escapeHtml(item.title)}</strong><div class="image-search-thumbnails">${item.images.map((src) => `<button type="button" data-image-candidate="${escapeHtml(src)}"><img src="${escapeHtml(src)}" loading="lazy" alt="${escapeHtml(item.title)}" /></button>`).join('')}</div><small class="subtle">${escapeHtml(item.attribution || '')}</small>${item.permalink ? `<a href="${escapeHtml(item.permalink)}" target="_blank" rel="noopener noreferrer">Ver fuente y licencia</a>` : ''}</article>`).join('');
+    $('#image-search-results').innerHTML = data.results.map((item) => `<article class="image-search-card"><strong>${escapeHtml(item.title)}</strong><div class="image-search-thumbnails">${item.images.map((src) => `<button type="button" data-image-candidate="${escapeHtml(src)}"><img src="${escapeHtml(src)}" loading="lazy" alt="${escapeHtml(item.title)}" /></button>`).join('')}</div><small class="subtle">${escapeHtml(item.attribution || '')}</small>${item.permalink ? `<a href="${escapeHtml(item.permalink)}" target="_blank" rel="noopener noreferrer">Abrir fuente</a>` : ''}</article>`).join('');
   } catch (error) { $('#image-search-status').textContent = error.message || 'No se pudieron cargar las fotos.'; }
   finally { button.disabled = false; }
 }

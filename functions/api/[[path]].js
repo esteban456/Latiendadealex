@@ -287,7 +287,7 @@ async function adminApi(request, url, env) {
     body = await readJson(request, url.pathname.endsWith('/upload') ? 5_500_000 : 1_000_000);
     if (!body.csrf || body.csrf !== getCookie(request, 'admin_csrf')) return json({ error: 'La sesión expiró. Vuelve a iniciar sesión.' }, 403);
   }
-  if (request.method === 'GET' && url.pathname === '/api/admin/image-search') return searchCommonsImages(url.searchParams.get('q') || '');
+  if (request.method === 'GET' && url.pathname === '/api/admin/image-search') return searchTransparentProductImages(url.searchParams.get('q') || '', env);
   if (request.method === 'GET' && url.pathname === '/api/admin/products') {
     try {
       return await adminList(env.DB, url, env);
@@ -395,52 +395,50 @@ function priceForCost(cost) {
   return { contado: round(contado), credito: round(credito) };
 }
 
-async function searchCommonsImages(query) {
-  const cleanQuery = String(query || '').trim().slice(0, 120);
-  if (!cleanQuery) return json({ results: [], message: 'Escribe el producto que quieres buscar.' });
+async function searchTransparentProductImages(query, env) {
+  const cleanQuery = String(query || '').trim().slice(0, 100);
+  if (!cleanQuery) return json({ results: [], message: 'Escribe la marca y el modelo del producto.' });
+  if (!env.SERPAPI_KEY) return json({ error: 'Falta configurar SERPAPI_KEY en los secretos de Cloudflare para buscar fotos de producto con fondo transparente.' }, 503);
   try {
-    const endpoint = new URL('https://commons.wikimedia.org/w/api.php');
+    const endpoint = new URL('https://serpapi.com/search.json');
     const params = {
-      action: 'query', generator: 'search', gsrsearch: `${cleanQuery} transparent PNG product`,
-      gsrnamespace: '6', gsrlimit: '16', prop: 'imageinfo',
-      iiprop: 'url|extmetadata|mime', iiextmetadatafilter: 'LicenseShortName|Artist',
-      iiurlwidth: '1200', format: 'json', formatversion: '2',
+      engine: 'google_images',
+      q: `${cleanQuery} product transparent PNG`,
+      google_domain: 'google.com.co',
+      gl: 'co',
+      hl: 'es-419',
+      tbs: 'ic:trans',
+      api_key: env.SERPAPI_KEY,
     };
     for (const [key, value] of Object.entries(params)) endpoint.searchParams.set(key, value);
-    const response = await fetch(endpoint, {
-      headers: {
-        Accept: 'application/json',
-        'User-Agent': 'LaTiendaDeAlex/1.0 (https://latiendadealex.pages.dev/; product image search)',
-        'Api-User-Agent': 'LaTiendaDeAlex/1.0 (https://latiendadealex.pages.dev/; product image search)',
-      },
-      signal: AbortSignal.timeout(12000),
-    });
-    if (!response.ok) return json({ error: `Wikimedia Commons respondió con error ${response.status}. Intenta de nuevo.` }, 502);
-    const data = await response.json();
-    const results = (data.query?.pages || []).map((page) => {
-      const info = page.imageinfo?.[0];
-      if (info?.mime !== 'image/png') return null;
-      const image = info?.thumburl || info?.url;
+    const response = await fetch(endpoint, { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(15000) });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.error) {
+      console.error('SerpApi image search:', response.status, data.error || '');
+      return json({ error: response.status === 429
+        ? 'Se alcanzó el límite de búsquedas. Espera y vuelve a intentarlo.'
+        : 'El proveedor de búsqueda no aceptó la consulta. Revisa SERPAPI_KEY en Cloudflare.' }, response.status === 429 ? 429 : 502);
+    }
+    const results = (data.images_results || []).slice(0, 16).map((item) => {
+      const image = item.original || item.thumbnail;
+      let permalink = '';
       try {
         if (!image || new URL(image).protocol !== 'https:') return null;
+        if (item.link && new URL(item.link).protocol === 'https:') permalink = item.link;
       } catch { return null; }
-      const metadata = info.extmetadata || {};
-      const plain = (value) => String(value || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&').trim();
-      const license = plain(metadata.LicenseShortName?.value);
-      const artist = plain(metadata.Artist?.value);
       return {
-        title: clean(String(page.title || 'Imagen').replace(/^File:/, ''), 180),
-        permalink: info.descriptionurl || '',
+        title: clean(item.title || 'Imagen de producto', 180),
+        permalink,
         images: [image],
-        attribution: clean([artist, license].filter(Boolean).join(' · ') || 'Consulta la licencia en la fuente', 500),
+        attribution: clean(item.source || 'Google Imágenes', 160),
       };
     }).filter(Boolean);
-    return json({ results, message: 'No encontramos imágenes con esos términos. Prueba con marca, modelo o palabras más generales.' });
+    return json({ results, message: 'No encontramos resultados transparentes. Prueba con marca, modelo y referencia.' });
   } catch (error) {
-    console.error('Wikimedia Commons image search:', error);
+    console.error('Transparent product image search:', error);
     const message = error?.name === 'TimeoutError' || error?.name === 'AbortError'
       ? 'La búsqueda tardó demasiado. Intenta de nuevo.'
-      : 'No se pudo conectar con Wikimedia Commons. Intenta de nuevo.';
+      : 'No se pudo conectar con la búsqueda de imágenes. Intenta de nuevo.';
     return json({ error: message }, 502);
   }
 }
@@ -469,9 +467,9 @@ async function adminSave(db, body) {
   const slug = clean(body.slug, 180) || normalize(name).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 160);
   const requestedImages = Array.isArray(body.images) ? body.images : null;
   const images = requestedImages
-    ? [...new Set(requestedImages.map((item) => clean(item, 600)).filter(Boolean))].slice(0, 8)
-    : (clean(body.image, 600) ? [clean(body.image, 600)] : (previous.images?.length ? previous.images.slice(0, 8) : (previous.image ? [previous.image] : [])));
-  const requestedPrimary = clean(body.image, 600);
+    ? [...new Set(requestedImages.map((item) => clean(item, 2000)).filter(Boolean))].slice(0, 8)
+    : (clean(body.image, 2000) ? [clean(body.image, 2000)] : (previous.images?.length ? previous.images.slice(0, 8) : (previous.image ? [previous.image] : [])));
+  const requestedPrimary = clean(body.image, 2000);
   const image = requestedPrimary && images.includes(requestedPrimary) ? requestedPrimary : (images[0] || '');
   const cashVariant = previous.variants?.find((variant) => /contado/i.test(variant.label)) || previous.variants?.[0];
   const creditVariant = previous.variants?.find((variant) => /credito/i.test(variant.sku) || /cr.dito/i.test(variant.label));
