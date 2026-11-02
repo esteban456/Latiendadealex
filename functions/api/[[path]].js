@@ -401,8 +401,8 @@ async function searchCommonsImages(query) {
   try {
     const endpoint = new URL('https://commons.wikimedia.org/w/api.php');
     const params = {
-      action: 'query', generator: 'search', gsrsearch: cleanQuery,
-      gsrnamespace: '6', gsrlimit: '12', prop: 'imageinfo',
+      action: 'query', generator: 'search', gsrsearch: `${cleanQuery} transparent PNG product`,
+      gsrnamespace: '6', gsrlimit: '16', prop: 'imageinfo',
       iiprop: 'url|extmetadata|mime', iiextmetadatafilter: 'LicenseShortName|Artist',
       iiurlwidth: '1200', format: 'json', formatversion: '2',
     };
@@ -419,7 +419,7 @@ async function searchCommonsImages(query) {
     const data = await response.json();
     const results = (data.query?.pages || []).map((page) => {
       const info = page.imageinfo?.[0];
-      if (!info?.mime?.startsWith('image/')) return null;
+      if (info?.mime !== 'image/png') return null;
       const image = info?.thumburl || info?.url;
       try {
         if (!image || new URL(image).protocol !== 'https:') return null;

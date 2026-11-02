@@ -75,12 +75,12 @@
       .image-search-thumbnails, .image-gallery { display: flex; flex-wrap: wrap; gap: 9px; }
       .image-search-thumbnails button { width: 100%; height: 140px; padding: 3px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
       .image-search-thumbnails button:hover { border-color: var(--brand); }
-      .image-search-thumbnails img { width: 100%; height: 100%; object-fit: contain; }
+      .image-search-thumbnails img { width: 100%; height: 100%; object-fit: contain; background-color: #fff; background-image: linear-gradient(45deg, #e4e7eb 25%, transparent 25%), linear-gradient(-45deg, #e4e7eb 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e4e7eb 75%), linear-gradient(-45deg, transparent 75%, #e4e7eb 75%); background-size: 16px 16px; background-position: 0 0, 0 8px, 8px -8px, -8px 0; }
       .image-gallery-panel { margin: 10px 0; }
       .image-gallery-heading { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
       .image-gallery-item { width: 100px; padding: 5px; border: 1px solid var(--line); border-radius: 9px; }
       .image-gallery-item.is-primary { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand); }
-      .image-gallery-item > img { width: 88px; height: 78px; object-fit: contain; }
+      .image-gallery-item > img { width: 88px; height: 78px; object-fit: contain; background-color: #fff; background-image: linear-gradient(45deg, #e4e7eb 25%, transparent 25%), linear-gradient(-45deg, #e4e7eb 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e4e7eb 75%), linear-gradient(-45deg, transparent 75%, #e4e7eb 75%); background-size: 16px 16px; background-position: 0 0, 0 8px, 8px -8px, -8px 0; }
       .image-gallery-item > div { display: grid; gap: 4px; }
       .image-gallery-item button { padding: 4px; border: 0; border-radius: 5px; background: #f1f3f5; color: var(--ink); font-size: .72rem; }
       .image-search-links, .image-url-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -256,7 +256,7 @@
               <div class="image-finder">
                 <strong>Busca el producto y elige sus fotos</strong>
                 <div class="image-url-row"><input id="image-search-query" type="search" placeholder="Ej.: Samsung Galaxy A55 256 GB" autocomplete="off" /><button id="search-product-images" class="button secondary" type="button">Buscar fotos</button></div>
-                <small class="subtle">Explora fotos relacionadas y agrégalas a la galería. Revisa su licencia y atribución antes de usarlas.</small>
+                <small class="subtle">Busca PNG relacionados con el producto. Las miniaturas con transparencia se ven sobre un damero; revisa que coincida el modelo y la licencia.</small>
                 <div id="image-search-status" class="subtle" role="status" aria-live="polite"></div>
                 <div id="image-search-results" class="image-search-results"></div>
               </div>
@@ -269,7 +269,7 @@
         </form>
       </section>
     </div>
-    <script src="assets/js/admin.js?v=20261102-commons-gallery" defer></script>
+    <script src="assets/js/admin.js?v=20261102-png-product-gallery" defer></script>
     <script src="assets/js/bulk-images.js?v=20261026-no-bg-removal" defer></script>
   </body>
 </html>
