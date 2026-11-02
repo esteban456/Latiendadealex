@@ -222,15 +222,10 @@ function showEditor(product = null) {
   $('#image-preview').src = productImages[0] || '';
   $('#image-preview').hidden = !productImages[0];
   $('#image-file').value = '';
-  $('#image-search-query').value = [product?.brand, product?.name].filter(Boolean).join(' ');
-  $('#image-search-query').dataset.touched = '';
-  $('#image-search-status').textContent = '';
-  $('#image-search-results').innerHTML = '';
   renderProductImageGallery();
   $('#category-options').innerHTML = state.categories.map((category) => `<option value="${escapeHtml(category.name)}"></option>`).join('');
   editor.hidden = false;
   document.body.classList.add('modal-open');
-  updateImageSearchLinks();
   $('#field-name').focus();
 }
 
@@ -572,30 +567,6 @@ $('#image-gallery').addEventListener('click', (event) => {
   else if (remove) productImages.splice(Number(remove.dataset.galleryRemove), 1);
   renderProductImageGallery();
 });
-async function searchProductImages() {
-  const query = $('#image-search-query').value.trim() || [$('#field-brand').value, $('#field-name').value].filter(Boolean).join(' ');
-  if (!query) return notice('Escribe el nombre del producto que quieres buscar.', 'error');
-  const button = $('#search-product-images');
-  button.disabled = true;
-  $('#image-search-status').textContent = 'Buscando PNG de producto…';
-  $('#image-search-results').innerHTML = '';
-  try {
-    const data = await request(`/api/admin/image-search?q=${encodeURIComponent(query)}`);
-    if (!data.results?.length) { $('#image-search-status').textContent = data.message || 'No encontramos imágenes transparentes. Prueba con marca, modelo y referencia.'; return; }
-    $('#image-search-status').textContent = 'Pulsa una imagen para agregarla. La transparencia real depende del archivo; revisa que el producto coincida.';
-    $('#image-search-results').innerHTML = data.results.map((item) => `<article class="image-search-card"><strong>${escapeHtml(item.title)}</strong><div class="image-search-thumbnails">${item.images.map((src) => `<button type="button" data-image-candidate="${escapeHtml(src)}"><img src="${escapeHtml(src)}" loading="lazy" alt="${escapeHtml(item.title)}" /></button>`).join('')}</div><small class="subtle">${escapeHtml(item.attribution || '')}</small>${item.permalink ? `<a href="${escapeHtml(item.permalink)}" target="_blank" rel="noopener noreferrer">Abrir fuente</a>` : ''}</article>`).join('');
-  } catch (error) { $('#image-search-status').textContent = error.message || 'No se pudieron cargar las fotos.'; }
-  finally { button.disabled = false; }
-}
-$('#field-name').addEventListener('input', () => { if (!$('#image-search-query').dataset.touched) $('#image-search-query').value = [$('#field-brand').value, $('#field-name').value].filter(Boolean).join(' '); });
-$('#field-brand').addEventListener('input', () => { if (!$('#image-search-query').dataset.touched) $('#image-search-query').value = [$('#field-brand').value, $('#field-name').value].filter(Boolean).join(' '); });
-$('#image-search-query').addEventListener('input', () => { $('#image-search-query').dataset.touched = '1'; });
-$('#search-product-images').addEventListener('click', searchProductImages);
-$('#image-search-query').addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); searchProductImages(); } });
-$('#image-search-results').addEventListener('click', (event) => {
-  const image = event.target.closest('[data-image-candidate]');
-  if (image) addProductImage(image.dataset.imageCandidate);
-});
 $('#image-file').addEventListener('change', async (event) => {
   const files = [...(event.target.files || [])];
   event.target.value = '';
@@ -616,17 +587,9 @@ imageDropZone.addEventListener('dragleave', (event) => {
 imageDropZone.addEventListener('drop', async (event) => {
   event.preventDefault();
   imageDropZone.classList.remove('drag-active');
-  const file = [...(event.dataTransfer?.files || [])].find((item) => item.type.startsWith('image/'))
-    || [...(event.dataTransfer?.items || [])].map((item) => item.getAsFile?.()).find((item) => item?.type.startsWith('image/'));
-  if (!file) {
-    const droppedUrl = (event.dataTransfer?.getData('text/uri-list') || event.dataTransfer?.getData('text/plain') || '').split(/\r?\n/).find((item) => /^https?:\/\//i.test(item.trim()))?.trim();
-    if (droppedUrl) {
-      addProductImage(droppedUrl);
-      return;
-    }
-    return notice('No se recibió una imagen. Prueba arrastrarla, pegar su enlace directo o subirla desde tu PC.', 'error');
-  }
-  await uploadProductImage(file);
+  const files = [...(event.dataTransfer?.files || [])].filter((item) => item.type.startsWith('image/'));
+  if (!files.length) return notice('Arrastra archivos de imagen desde tu equipo.', 'error');
+  for (const file of files) await uploadProductImage(file);
 });
 
 document.addEventListener('paste', async (event) => {
@@ -639,8 +602,6 @@ document.addEventListener('paste', async (event) => {
   event.preventDefault();
   await uploadProductImage(file);
 });
-
-updateImageSearchLinks();
 
 productForm.addEventListener('submit', async (event) => {
   event.preventDefault();

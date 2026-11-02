@@ -287,7 +287,6 @@ async function adminApi(request, url, env) {
     body = await readJson(request, url.pathname.endsWith('/upload') ? 5_500_000 : 1_000_000);
     if (!body.csrf || body.csrf !== getCookie(request, 'admin_csrf')) return json({ error: 'La sesión expiró. Vuelve a iniciar sesión.' }, 403);
   }
-  if (request.method === 'GET' && url.pathname === '/api/admin/image-search') return searchTransparentProductImages(url.searchParams.get('q') || '', env);
   if (request.method === 'GET' && url.pathname === '/api/admin/products') {
     try {
       return await adminList(env.DB, url, env);
@@ -393,54 +392,6 @@ function priceForCost(cost) {
   else { contado = value * 1.2; credito = value * 1.3; }
   const round = (amount) => Math.round(amount / 100) * 100;
   return { contado: round(contado), credito: round(credito) };
-}
-
-async function searchTransparentProductImages(query, env) {
-  const cleanQuery = String(query || '').trim().slice(0, 100);
-  if (!cleanQuery) return json({ results: [], message: 'Escribe la marca y el modelo del producto.' });
-  if (!env.SERPAPI_KEY) return json({ error: 'Falta configurar SERPAPI_KEY en los secretos de Cloudflare para buscar fotos de producto con fondo transparente.' }, 503);
-  try {
-    const endpoint = new URL('https://serpapi.com/search.json');
-    const params = {
-      engine: 'google_images',
-      q: `${cleanQuery} product transparent PNG`,
-      google_domain: 'google.com.co',
-      gl: 'co',
-      hl: 'es-419',
-      tbs: 'ic:trans',
-      api_key: env.SERPAPI_KEY,
-    };
-    for (const [key, value] of Object.entries(params)) endpoint.searchParams.set(key, value);
-    const response = await fetch(endpoint, { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(15000) });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok || data.error) {
-      console.error('SerpApi image search:', response.status, data.error || '');
-      return json({ error: response.status === 429
-        ? 'Se alcanzó el límite de búsquedas. Espera y vuelve a intentarlo.'
-        : 'El proveedor de búsqueda no aceptó la consulta. Revisa SERPAPI_KEY en Cloudflare.' }, response.status === 429 ? 429 : 502);
-    }
-    const results = (data.images_results || []).slice(0, 16).map((item) => {
-      const image = item.original || item.thumbnail;
-      let permalink = '';
-      try {
-        if (!image || new URL(image).protocol !== 'https:') return null;
-        if (item.link && new URL(item.link).protocol === 'https:') permalink = item.link;
-      } catch { return null; }
-      return {
-        title: clean(item.title || 'Imagen de producto', 180),
-        permalink,
-        images: [image],
-        attribution: clean(item.source || 'Google Imágenes', 160),
-      };
-    }).filter(Boolean);
-    return json({ results, message: 'No encontramos resultados transparentes. Prueba con marca, modelo y referencia.' });
-  } catch (error) {
-    console.error('Transparent product image search:', error);
-    const message = error?.name === 'TimeoutError' || error?.name === 'AbortError'
-      ? 'La búsqueda tardó demasiado. Intenta de nuevo.'
-      : 'No se pudo conectar con la búsqueda de imágenes. Intenta de nuevo.';
-    return json({ error: message }, 502);
-  }
 }
 
 async function adminSave(db, body) {
