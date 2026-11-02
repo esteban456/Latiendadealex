@@ -68,12 +68,12 @@
       .image-preview { width: 112px; height: 112px; border: 1px solid var(--line); border-radius: 10px; object-fit: contain; background: #f8f9fa; }
       .image-finder { display: grid; gap: 10px; margin: 10px 0; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: #f8f9fa; }
       .image-finder p { margin: 0; }
-      .image-search-results { display: grid; gap: 12px; }
+      .image-search-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
       .image-search-card, .image-gallery-panel { padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
-      .image-search-card { display: grid; gap: 9px; }
+      .image-search-card { display: grid; align-content: start; gap: 9px; min-width: 0; }
       .image-search-card > a { color: var(--brand); font-size: .88rem; }
       .image-search-thumbnails, .image-gallery { display: flex; flex-wrap: wrap; gap: 9px; }
-      .image-search-thumbnails button { width: 76px; height: 76px; padding: 3px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+      .image-search-thumbnails button { width: 100%; height: 140px; padding: 3px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
       .image-search-thumbnails button:hover { border-color: var(--brand); }
       .image-search-thumbnails img { width: 100%; height: 100%; object-fit: contain; }
       .image-gallery-panel { margin: 10px 0; }
@@ -256,7 +256,7 @@
               <div class="image-finder">
                 <strong>Busca el producto y elige sus fotos</strong>
                 <div class="image-url-row"><input id="image-search-query" type="search" placeholder="Ej.: Samsung Galaxy A55 256 GB" autocomplete="off" /><button id="search-product-images" class="button secondary" type="button">Buscar fotos</button></div>
-                <small class="subtle">Verás hasta cuatro fotos por publicación. Toca las que quieras agregar a la galería del producto.</small>
+                <small class="subtle">Explora fotos relacionadas y agrégalas a la galería. Revisa su licencia y atribución antes de usarlas.</small>
                 <div id="image-search-status" class="subtle" role="status" aria-live="polite"></div>
                 <div id="image-search-results" class="image-search-results"></div>
               </div>

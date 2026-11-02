@@ -287,7 +287,7 @@ async function adminApi(request, url, env) {
     body = await readJson(request, url.pathname.endsWith('/upload') ? 5_500_000 : 1_000_000);
     if (!body.csrf || body.csrf !== getCookie(request, 'admin_csrf')) return json({ error: 'La sesión expiró. Vuelve a iniciar sesión.' }, 403);
   }
-  if (request.method === 'GET' && url.pathname === '/api/admin/image-search') return searchMercadoLibreImages(url.searchParams.get('q') || '', env);
+  if (request.method === 'GET' && url.pathname === '/api/admin/image-search') return searchOpenverseImages(url.searchParams.get('q') || '');
   if (request.method === 'GET' && url.pathname === '/api/admin/products') {
     try {
       return await adminList(env.DB, url, env);
@@ -395,34 +395,36 @@ function priceForCost(cost) {
   return { contado: round(contado), credito: round(credito) };
 }
 
-async function searchMercadoLibreImages(query, env) {
+async function searchOpenverseImages(query) {
   const cleanQuery = String(query || '').trim().slice(0, 120);
   if (!cleanQuery) return json({ results: [], message: 'Escribe el producto que quieres buscar.' });
-  if (!env.MELI_ACCESS_TOKEN) return json({ error: 'Configura MELI_ACCESS_TOKEN en los secretos de Cloudflare para buscar fotos de Mercado Libre.' }, 503);
-  const headers = { Accept: 'application/json', Authorization: `Bearer ${env.MELI_ACCESS_TOKEN}` };
   try {
-    const searchUrl = new URL('https://api.mercadolibre.com/sites/MCO/search');
+    const searchUrl = new URL('https://api.openverse.org/v1/images/');
     searchUrl.searchParams.set('q', cleanQuery);
-    searchUrl.searchParams.set('limit', '6');
-    const searchResponse = await fetch(searchUrl, { headers });
-    if (!searchResponse.ok) return json({ error: 'Mercado Libre no permitió buscar ahora. Intenta de nuevo en un momento.' }, 502);
-    const searchData = await searchResponse.json();
-    const items = (searchData.results || []).slice(0, 6);
-    const results = await Promise.all(items.map(async (item) => {
+    searchUrl.searchParams.set('page_size', '12');
+    searchUrl.searchParams.set('mature', 'false');
+    const response = await fetch(searchUrl, { headers: { Accept: 'application/json' } });
+    if (!response.ok) {
+      if (response.status === 429) return json({ error: 'El buscador de imágenes está temporalmente limitado. Intenta más tarde.' }, 429);
+      return json({ error: 'El buscador abierto de imágenes no respondió. Intenta de nuevo.' }, 502);
+    }
+    const data = await response.json();
+    const results = (data.results || []).map((item) => {
+      const image = item.url || item.thumbnail;
       try {
-        const detailResponse = await fetch(`https://api.mercadolibre.com/items/${encodeURIComponent(item.id)}`, { headers });
-        const detail = detailResponse.ok ? await detailResponse.json() : item;
-        const images = [...new Set((detail.pictures || []).map((picture) => picture.secure_url || picture.url).filter((src) => {
-          try { const parsed = new URL(src); return parsed.protocol === 'https:' && /(^|\.)mlstatic\.com$/i.test(parsed.hostname); } catch { return false; }
-        }))].slice(0, 4);
-        if (!images.length && item.thumbnail && /^https:\/\//i.test(item.thumbnail) && /(^|\.)mlstatic\.com$/i.test(new URL(item.thumbnail).hostname)) images.push(item.thumbnail);
-        return { title: detail.title || item.title || 'Producto', permalink: detail.permalink || item.permalink || '', images };
+        if (!image || new URL(image).protocol !== 'https:') return null;
       } catch { return null; }
-    }));
-    return json({ results: results.filter((item) => item?.images.length) });
+      return {
+        title: clean(item.title || 'Foto relacionada', 180),
+        permalink: item.foreign_landing_url || item.detail_url || '',
+        images: [image],
+        attribution: clean(item.attribution || `${item.license || 'Licencia no indicada'} · ${item.creator || 'Autor no indicado'}`, 500),
+      };
+    }).filter(Boolean);
+    return json({ results });
   } catch (error) {
-    console.error('Mercado Libre image search:', error);
-    return json({ error: 'No se pudo conectar con la búsqueda de imágenes.' }, 502);
+    console.error('Openverse image search:', error);
+    return json({ error: 'No se pudo conectar con el buscador abierto de imágenes.' }, 502);
   }
 }
 
