@@ -82,14 +82,14 @@
       .field select { width:100%; min-height:44px; padding:10px 12px; border:1px solid #d8dee4; border-radius:9px; color:var(--ink); background:#fff; font:inherit; }
       .field[hidden] { display:none !important; }
       .background-samples { display:flex; gap:9px; margin-top:3px; }
-      .background-samples span { width:46px; height:28px; border:1px solid #d8dee4; border-radius:6px; }
+      .background-samples img { width:74px; height:54px; border:1px solid #d8dee4; border-radius:6px; object-fit:cover; background:#f8f9fa; }
       .background-samples .sample-ice { background:linear-gradient(135deg,#f4f8fa,#dce9ee); }
       .background-samples .sample-sky { background:linear-gradient(135deg,#edf6fb,#d5e8f3); }
       .background-samples .sample-lilac { background:linear-gradient(135deg,#f6f1fa,#e8def2); }
 
     </style>
     <link rel="stylesheet" href="assets/css/design-refresh.css?v=20261017-darkfix" />
-    <link rel="stylesheet" href="assets/css/storefront.css?v=20261102-image-background" />
+    <link rel="stylesheet" href="assets/css/storefront.css?v=20261102-phone-templates" />
   </head>
   <body>
     <header class="topbar">
@@ -223,12 +223,16 @@
             <div class="field span-2" id="image-background-field" hidden>
               <label for="field-image-background">Fondo para celulares Android</label>
               <select id="field-image-background">
-                <option value="phone-ice">Fondo 1 · Hielo claro</option>
-                <option value="phone-sky">Fondo 2 · Azul suave</option>
-                <option value="phone-lilac">Fondo 3 · Lavanda</option>
+                <option value="phone-ice">Plantilla · Celulares 1</option>
+                <option value="phone-sky">Plantilla · Celulares 2</option>
+                <option value="phone-lilac">Plantilla · Celulares 3</option>
               </select>
-              <div class="background-samples" aria-hidden="true"><span class="sample-ice"></span><span class="sample-sky"></span><span class="sample-lilac"></span></div>
-              <small class="subtle">Elige uno de los tres fondos que aparecerá detrás del producto en la tienda.</small>
+              <div class="background-samples" aria-label="Fondos disponibles">
+                <img src="/assets/img/plantilla/Fondo%20Para%20Celulares.jpg" alt="Fondo para celulares 1" />
+                <img src="/assets/img/plantilla/Fondo%20Para%20Celulares%202.jpg" alt="Fondo para celulares 2" />
+                <img src="/assets/img/plantilla/Fondo%20Para%20Celulares%203.jpg" alt="Fondo para celulares 3" />
+              </div>
+              <small class="subtle">Elige la plantilla antes de subir la imagen. Si cambias la plantilla después, vuelve a subir la imagen original para aplicarla.</small>
             </div>
 
             <div class="field span-2"><label for="field-description">Descripción</label><textarea id="field-description" maxlength="5000" placeholder="Características y detalles del producto"></textarea></div>
@@ -253,7 +257,7 @@
         </form>
       </section>
     </div>
-    <script src="assets/js/admin.js?v=20261102-phone-background" defer></script>
+    <script src="assets/js/admin.js?v=20261102-phone-templates" defer></script>
     <script src="assets/js/bulk-images.js?v=20261026-no-bg-removal" defer></script>
   </body>
 </html>

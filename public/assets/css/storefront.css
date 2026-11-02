@@ -670,3 +670,9 @@ html[data-theme="dark"] body:has(header.header) .card-media[data-image-backgroun
 html[data-theme="dark"] body:has(header.header) .card-media[data-image-background="phone-sky"],html[data-theme="dark"] body:has(header.header) .product .gallery[data-image-background="phone-sky"]{background:linear-gradient(145deg,#263945 0%,#1e2d37 100%)!important}
 html[data-theme="dark"] body:has(header.header) .card-media[data-image-background="phone-lilac"],html[data-theme="dark"] body:has(header.header) .product .gallery[data-image-background="phone-lilac"]{background:linear-gradient(145deg,#342f3c 0%,#292431 100%)!important}
 html[data-theme="dark"] body:has(header.header) .card-media[data-image-background^="phone-"] img,html[data-theme="dark"] body:has(header.header) .product .gallery[data-image-background^="phone-"]>#main-image{mix-blend-mode:normal;background:transparent!important}
+
+
+/* Los productos usan la plantilla elegida y compuesta al subir su imagen. */
+body:has(header.header) .card-media[data-image-background^="phone-"],body:has(header.header) .product .gallery[data-image-background^="phone-"]{background:#f5f7f8!important;background-image:none!important}
+body:has(header.header) .card-media[data-image-background^="phone-"] img,body:has(header.header) .product .gallery[data-image-background^="phone-"]>#main-image{mix-blend-mode:normal;background:transparent!important}
+html[data-theme="dark"] body:has(header.header) .card-media[data-image-background^="phone-"],html[data-theme="dark"] body:has(header.header) .product .gallery[data-image-background^="phone-"]{background:#202d35!important;background-image:none!important}

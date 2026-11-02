@@ -183,6 +183,12 @@ function isAndroidPhoneCategory(category, brand = '', name = '') {
   return isPhone && !isApple;
 }
 
+const PHONE_BACKGROUND_TEMPLATES = {
+  'phone-ice': '/assets/img/plantilla/Fondo%20Para%20Celulares.jpg',
+  'phone-sky': '/assets/img/plantilla/Fondo%20Para%20Celulares%202.jpg',
+  'phone-lilac': '/assets/img/plantilla/Fondo%20Para%20Celulares%203.jpg',
+};
+
 function syncImageBackgroundField() {
   const field = $('#image-background-field');
   if (!field) return;
@@ -449,7 +455,9 @@ async function uploadProductImage(file) {
   saveButton.textContent = 'Subiendo imagen…';
   try {
     notice('Preparando imagen…');
-    const templateResponse = await fetch('/assets/img/plantilla.jpg', { cache: 'force-cache' });
+    const isPhone = isAndroidPhoneCategory($('#field-category').value, $('#field-brand').value, $('#field-name').value);
+    const templatePath = isPhone ? (PHONE_BACKGROUND_TEMPLATES[$('#field-image-background').value] || PHONE_BACKGROUND_TEMPLATES['phone-ice']) : '/assets/img/plantilla.jpg';
+    const templateResponse = await fetch(templatePath, { cache: 'force-cache' });
     if (!templateResponse.ok) throw new Error('No se encontró la plantilla de imagen.');
     const templateBitmap = await createImageBitmap(await templateResponse.blob());
     const productBitmap = await createImageBitmap(file, { resizeWidth: 1400, resizeQuality: 'high' });
@@ -487,7 +495,7 @@ async function uploadProductImage(file) {
       throw error;
     } finally { clearTimeout(uploadTimeout); }
     $('#field-image').value = uploaded.image;
-    notice('Imagen subida y centrada sobre la plantilla. Guarda el producto para aplicar los cambios.', 'success');
+    notice('Imagen subida y compuesta sobre la plantilla seleccionada. Guarda el producto para aplicar los cambios.', 'success');
   } catch (error) {
     if (!localPreviewReady) {
       $('#image-preview').src = existingImage;
