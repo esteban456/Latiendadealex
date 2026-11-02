@@ -410,7 +410,8 @@ async function searchCommonsImages(query) {
     const response = await fetch(endpoint, {
       headers: {
         Accept: 'application/json',
-        'User-Agent': 'LaTiendaDeAlex/1.0 (product image search; admin panel)',
+        'User-Agent': 'LaTiendaDeAlex/1.0 (https://latiendadealex.pages.dev/; product image search)',
+        'Api-User-Agent': 'LaTiendaDeAlex/1.0 (https://latiendadealex.pages.dev/; product image search)',
       },
       signal: AbortSignal.timeout(12000),
     });
