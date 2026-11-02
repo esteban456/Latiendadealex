@@ -9,7 +9,7 @@
   productCard,
   bindAddButtons,
   toast,
-} from './core.js?v=20261016-catalogo';
+} from './core.js?v=20261102-image-background';
 
 const PAGE_SIZE = 48;
 let FREE_SHIPPING_FROM = 300000;

@@ -1,4 +1,4 @@
-import { $, $$, escapeHtml, getImageSrc, getThumbSrc, initChrome, loadConfig, money, productCard, bindAddButtons, toast } from './core.js?v=20261016-catalogo';
+import { $, $$, escapeHtml, getImageSrc, getThumbSrc, initChrome, loadConfig, money, productCard, bindAddButtons, toast } from './core.js?v=20261102-image-background';
 
 const FEATURED_KEYWORDS = [
   'iphone', 'samsung galaxy', 'macbook', 'notebook', 'laptop', 'ipad', 'jbl', 'airpods',

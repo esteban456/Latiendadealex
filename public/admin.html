@@ -78,9 +78,18 @@
       .form-actions { display: flex; justify-content: end; gap: 10px; margin-top: 10px; }
       body.modal-open { overflow: hidden; }
       @media (max-width: 760px) { .wrap { width: min(100% - 22px, 1240px); margin-top: 24px; } .heading { align-items: start; flex-direction: column; } .toolbar { align-items: stretch; flex-direction: column; } .search { max-width: none; } .form-grid { grid-template-columns: 1fr; } .span-2 { grid-column: auto; } .login-card { padding: 28px 22px; } .topbar { padding: 12px 16px; } }
+    
+      .field select { width:100%; min-height:44px; padding:10px 12px; border:1px solid #d8dee4; border-radius:9px; color:var(--ink); background:#fff; font:inherit; }
+      .field[hidden] { display:none !important; }
+      .background-samples { display:flex; gap:9px; margin-top:3px; }
+      .background-samples span { width:46px; height:28px; border:1px solid #d8dee4; border-radius:6px; }
+      .background-samples .sample-ice { background:linear-gradient(135deg,#f4f8fa,#dce9ee); }
+      .background-samples .sample-sky { background:linear-gradient(135deg,#edf6fb,#d5e8f3); }
+      .background-samples .sample-lilac { background:linear-gradient(135deg,#f6f1fa,#e8def2); }
+
     </style>
     <link rel="stylesheet" href="assets/css/design-refresh.css?v=20261017-darkfix" />
-    <link rel="stylesheet" href="assets/css/storefront.css?v=20261102-search-polish" />
+    <link rel="stylesheet" href="assets/css/storefront.css?v=20261102-image-background" />
   </head>
   <body>
     <header class="topbar">
@@ -211,6 +220,17 @@
             <div class="field span-2"><label><input id="field-credit-enabled" type="checkbox" checked /> Ofrecer pago a crédito</label><small class="subtle">Al activarlo, el cliente podrá escoger entre contado y crédito en la ficha del producto.</small></div>
             <div class="field"><label for="field-stock">Unidades disponibles</label><input id="field-stock" type="number" min="0" step="1" value="0" /></div>
             <div class="field span-2"><label for="field-category">Categoría *</label><input id="field-category" list="category-options" maxlength="100" required /><datalist id="category-options"></datalist></div>
+            <div class="field span-2" id="image-background-field" hidden>
+              <label for="field-image-background">Fondo para celulares Android</label>
+              <select id="field-image-background">
+                <option value="phone-ice">Fondo 1 · Hielo claro</option>
+                <option value="phone-sky">Fondo 2 · Azul suave</option>
+                <option value="phone-lilac">Fondo 3 · Lavanda</option>
+              </select>
+              <div class="background-samples" aria-hidden="true"><span class="sample-ice"></span><span class="sample-sky"></span><span class="sample-lilac"></span></div>
+              <small class="subtle">Elige uno de los tres fondos que aparecerá detrás del producto en la tienda.</small>
+            </div>
+
             <div class="field span-2"><label for="field-description">Descripción</label><textarea id="field-description" maxlength="5000" placeholder="Características y detalles del producto"></textarea></div>
             <div class="field span-2">
               <label>Imagen del producto</label>
@@ -233,7 +253,7 @@
         </form>
       </section>
     </div>
-    <script src="assets/js/admin.js?v=20261029-image-finder" defer></script>
+    <script src="assets/js/admin.js?v=20261102-phone-background" defer></script>
     <script src="assets/js/bulk-images.js?v=20261026-no-bg-removal" defer></script>
   </body>
 </html>

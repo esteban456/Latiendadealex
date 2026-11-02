@@ -658,3 +658,15 @@ html[data-theme="dark"] body:has(header.header) .header .search-suggestions{bord
   @keyframes cover-settle{from{opacity:.7;transform:scale(1.025)}to{opacity:1;transform:scale(1)}}
 }
 @media(prefers-reduced-motion:reduce){.motion-reveal{opacity:1!important;transform:none!important;transition:none!important;animation:none!important}}
+
+
+
+/* Tres fondos opcionales para celulares Android, elegibles desde el admin. */
+body:has(header.header) .card-media[data-image-background="phone-ice"],body:has(header.header) .product .gallery[data-image-background="phone-ice"]{background:linear-gradient(145deg,#f4f8fa 0%,#dce9ee 100%)!important}
+body:has(header.header) .card-media[data-image-background="phone-sky"],body:has(header.header) .product .gallery[data-image-background="phone-sky"]{background:linear-gradient(145deg,#edf6fb 0%,#d5e8f3 100%)!important}
+body:has(header.header) .card-media[data-image-background="phone-lilac"],body:has(header.header) .product .gallery[data-image-background="phone-lilac"]{background:linear-gradient(145deg,#f6f1fa 0%,#e8def2 100%)!important}
+body:has(header.header) .card-media[data-image-background^="phone-"] img,body:has(header.header) .product .gallery[data-image-background^="phone-"]>#main-image{background:transparent!important;mix-blend-mode:multiply}
+html[data-theme="dark"] body:has(header.header) .card-media[data-image-background="phone-ice"],html[data-theme="dark"] body:has(header.header) .product .gallery[data-image-background="phone-ice"]{background:linear-gradient(145deg,#273740 0%,#202c34 100%)!important}
+html[data-theme="dark"] body:has(header.header) .card-media[data-image-background="phone-sky"],html[data-theme="dark"] body:has(header.header) .product .gallery[data-image-background="phone-sky"]{background:linear-gradient(145deg,#263945 0%,#1e2d37 100%)!important}
+html[data-theme="dark"] body:has(header.header) .card-media[data-image-background="phone-lilac"],html[data-theme="dark"] body:has(header.header) .product .gallery[data-image-background="phone-lilac"]{background:linear-gradient(145deg,#342f3c 0%,#292431 100%)!important}
+html[data-theme="dark"] body:has(header.header) .card-media[data-image-background^="phone-"] img,html[data-theme="dark"] body:has(header.header) .product .gallery[data-image-background^="phone-"]>#main-image{mix-blend-mode:normal;background:transparent!important}

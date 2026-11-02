@@ -1,4 +1,4 @@
-﻿import { initMobileAppNavigation } from './core.js?v=20261016-catalogo';
+﻿import { initMobileAppNavigation } from './core.js?v=20261102-image-background';
 const statusNode = document.querySelector('#login-status');
 const googleButton = document.querySelector('#google-button');
 const accountForm = document.querySelector('#account-form');

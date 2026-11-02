@@ -168,6 +168,16 @@ export function getThumbSrc(imagePath) {
   return imagenSinFondo(base, 'w-400');
 }
 
+const PHONE_IMAGE_BACKGROUNDS = new Set(['phone-ice', 'phone-sky', 'phone-lilac']);
+
+export function productImageBackground(product = {}) {
+  const categories = (product.categories || []).map((category) => typeof category === 'string' ? category : category?.name || '');
+  const isPhone = categories.some((category) => /celular|smartphone|tel[eé]fono|android/i.test(category));
+  const isApple = /apple|iphone/i.test(`${product.brand || ''} ${product.name || ''} ${categories.join(' ')}`);
+  if (!isPhone || isApple) return '';
+  return PHONE_IMAGE_BACKGROUNDS.has(product.imageBackground) ? product.imageBackground : 'phone-ice';
+}
+
 export function productCard(product) {
   const off = !product.available;
   const creditVariant = (product.variants || []).find((variant) => /cr[eé]dito/i.test(variant.label));
@@ -194,10 +204,11 @@ export function productCard(product) {
   const imgSrc = escapeHtml(getThumbSrc(product.image));
   const imgFull = escapeHtml(getImageSrc(product.image));
   const imgAlt = escapeHtml(product.name);
+  const imageBackground = productImageBackground(product);
 
   return `
     <article class="card ${off ? 'stock-off' : ''}">
-      <a class="card-media" href="producto.html?slug=${encodeURIComponent(product.slug)}" aria-label="${escapeHtml(product.name)}">
+      <a class="card-media" data-image-background="${imageBackground}" href="producto.html?slug=${encodeURIComponent(product.slug)}" aria-label="${escapeHtml(product.name)}">
         ${badges}
         <img data-src="${imgSrc}" data-full="${imgFull}" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E" alt="${imgAlt}" loading="lazy" data-fallback class="lazy-img" />
       </a>

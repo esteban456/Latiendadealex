@@ -1,4 +1,4 @@
-import { $, escapeHtml, getImageSrc, getThumbSrc, initChrome, loadConfig, money, plainText, productCard, addToCart, bindAddButtons, toast } from './core.js?v=20261016-catalogo';
+import { $, escapeHtml, getImageSrc, getThumbSrc, initChrome, loadConfig, money, plainText, productCard, productImageBackground, addToCart, bindAddButtons, toast } from './core.js?v=20261102-image-background';
 
 const PLACEHOLDER =
   'data:image/svg+xml;utf8,' +
@@ -269,12 +269,13 @@ async function main() {
 function render(product) {
   const images = (product.images?.length ? product.images : [product.image]).filter(Boolean);
   const categories = (product.categories || []).slice(0, 3);
+  const imageBackground = productImageBackground(product);
   const visibleVariants = (product.variants || []).filter((variant) => !variant.legacy);
   const paymentVariants = visibleVariants.filter((variant) => /contado|cr[eé]dito/i.test(variant.label));
   const description = plainText(product.description) || `Consulta disponibilidad y detalles de ${product.name} con nuestro equipo.`;
   return `
     <div class="product">
-      <div class="gallery">
+      <div class="gallery" data-image-background="${imageBackground}">
         <img id="main-image" src="${escapeHtml(getImageSrc(images[0]))}" alt="${escapeHtml(product.name)}" data-fallback${images.length ? ' data-zoom' : ''} />
         ${images.length ? '<button type="button" class="zoom-trigger" data-zoom aria-label="Ampliar imagen">🔍<span>Ampliar</span></button>' : ''}
         ${

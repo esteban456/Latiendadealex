@@ -285,6 +285,11 @@ async function adminSave(db, body) {
   const old = body.id ? await db.prepare('SELECT data FROM products WHERE id = ?').bind(body.id).first() : null;
   if (body.id && !old) return json({ error: 'No se encontró el producto.' }, 404);
   const previous = old ? JSON.parse(old.data) : {};
+  const allowedImageBackgrounds = ['phone-ice', 'phone-sky', 'phone-lilac'];
+  const requestedImageBackground = clean(body.imageBackground, 32);
+  const imageBackground = allowedImageBackgrounds.includes(requestedImageBackground)
+    ? requestedImageBackground
+    : (allowedImageBackgrounds.includes(previous.imageBackground) ? previous.imageBackground : 'phone-ice');
   const slug = clean(body.slug, 180) || normalize(name).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 160);
   const image = clean(body.image, 600);
   const cashVariant = previous.variants?.find((variant) => /contado/i.test(variant.label)) || previous.variants?.[0];
@@ -303,7 +308,7 @@ async function adminSave(db, body) {
     brand: clean(body.brand, 100), description: clean(body.description, 5000), price,
     cost: hasCost ? cost : (Number(previous.cost) || undefined),
     maxPrice: offerCredit ? creditPrice : price, compareAt: priced ? price : (Number(previous.compareAt) || price),
-    image, images: image ? [image] : [], categories: [{ name: category, icon: categoryIcon }], variants,
+    image, images: image ? [image] : [], imageBackground, categories: [{ name: category, icon: categoryIcon }], variants,
     available: stock > 0, stock, specs: previous.specs || {}, tags: previous.tags || [], source: previous.source || 'panel-admin',
   };
   product.variants = paymentVariants;

@@ -175,6 +175,24 @@ async function loadOrders() {
   $('#orders-table').hidden = data.orders.length === 0;
 }
 
+function isAndroidPhoneCategory(category, brand = '', name = '') {
+  const categoryText = String(category || '');
+  const productText = `${brand} ${name}`;
+  const isPhone = /celular|smartphone|tel[eé]fono|android/i.test(categoryText);
+  const isApple = /apple|iphone/i.test(`${categoryText} ${productText}`);
+  return isPhone && !isApple;
+}
+
+function syncImageBackgroundField() {
+  const field = $('#image-background-field');
+  if (!field) return;
+  field.hidden = !isAndroidPhoneCategory($('#field-category').value, $('#field-brand').value, $('#field-name').value);
+}
+
+$('#field-category').addEventListener('input', syncImageBackgroundField);
+$('#field-brand').addEventListener('input', syncImageBackgroundField);
+$('#field-name').addEventListener('input', syncImageBackgroundField);
+
 function showEditor(product = null) {
   productForm.reset();
   $('#edit-id').value = product?.id || '';
@@ -189,6 +207,8 @@ function showEditor(product = null) {
   applyCost();
   $('#field-stock').value = product?.stock ?? 0;
   $('#field-category').value = product?.categories?.[0]?.name || '';
+  $('#field-image-background').value = product?.imageBackground || 'phone-ice';
+  syncImageBackgroundField();
   $('#field-description').value = product?.description || '';
   $('#field-image').value = product?.image || '';
   $('#image-url-input').value = /^https?:\/\//i.test(product?.image || '') ? product.image : '';
@@ -569,6 +589,7 @@ productForm.addEventListener('submit', async (event) => {
     offerCredit: $('#field-credit-enabled').checked,
     creditPrice: $('#field-credit-enabled').checked ? Number($('#field-credit-price').value || $('#field-price').value) : null,
     stock: Number($('#field-stock').value), category,
+    imageBackground: isAndroidPhoneCategory(category, $('#field-brand').value, name) ? $('#field-image-background').value : '',
     description: $('#field-description').value, image: $('#field-image').value, csrf: state.csrf,
   };
   const saveController = new AbortController();

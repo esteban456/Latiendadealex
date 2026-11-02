@@ -1,4 +1,4 @@
-﻿import { $, PLACEHOLDER, cart, escapeHtml, getThumbSrc, initChrome, loadConfig, money, toast } from './core.js?v=20261016-catalogo';
+﻿import { $, PLACEHOLDER, cart, escapeHtml, getThumbSrc, initChrome, loadConfig, money, toast } from './core.js?v=20261102-image-background';
 
 let FREE_SHIPPING_FROM = 300000;
 let SHIPPING_FLAT = 25000;

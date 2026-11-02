@@ -1,4 +1,4 @@
-import { $, escapeHtml, initChrome, money } from './core.js?v=20261016-catalogo';
+import { $, escapeHtml, initChrome, money } from './core.js?v=20261102-image-background';
 
 const STATUS_COPY = {
   pagado: {
