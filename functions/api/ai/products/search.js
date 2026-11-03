@@ -14,13 +14,14 @@ function reply(data, status = 200) {
 }
 
 function normalize(value) {
-  return String(value ?? '').toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');
+  return String(value ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
 function mapImage(image, env) {
-  if (!image || /^https?:\\/\\//i.test(image) || image.startsWith('data:')) return image || '';
-  const endpoint = String(env.IMAGEKIT_URL_ENDPOINT || 'https://ik.imagekit.io/eayqxn9lnz').replace(/\\/+$/, '');
-  const folder = String(env.IMAGEKIT_FOLDER || '/Latiendadealex').replace(/^\\/+|\\/+$/g, '');
+  const lower = String(image || '').toLowerCase();
+  if (!image || lower.startsWith('http://') || lower.startsWith('https://') || image.startsWith('data:')) return image || '';
+  const endpoint = String(env.IMAGEKIT_URL_ENDPOINT || 'https://ik.imagekit.io/eayqxn9lnz').replace(/\/+$/, '');
+  const folder = String(env.IMAGEKIT_FOLDER || '/Latiendadealex').replace(/^\/+|\/+$/g, '');
   return `${endpoint}/${folder}/${encodeURIComponent(image.split('/').pop())}`;
 }
 
