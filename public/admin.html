@@ -210,7 +210,7 @@
     <div id="bulk-products-modal" class="modal" hidden>
       <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="bulk-products-title">
         <header class="modal-heading"><h2 id="bulk-products-title">Importar productos</h2><button id="bulk-products-close" class="close" type="button" aria-label="Cerrar">×</button></header>
-        <p class="subtle">Sube un Excel (.xlsx) o CSV. Columnas recomendadas: <code>nombre, marca, costo, stock, categoria, descripcion, imagen</code>. El costo calcula automáticamente los precios de contado y crédito.</p>
+        <p class="subtle">Sube un Excel (.xlsx) o CSV. Columnas requeridas: <code>nombre, costo, stock, categoria</code>. Marca y descripción son opcionales. Las imágenes también son opcionales: puedes agregarlas después, una por una, al editar cada producto. El costo calcula automáticamente los precios de contado y crédito.</p>
         <div id="bulk-products-notice" class="notice" role="status" aria-live="polite" hidden></div>
         <label class="upload-label" for="bulk-products-file">Elegir archivo <input id="bulk-products-file" type="file" accept=".xlsx,.xls,.csv,text/csv" /></label>
         <p id="bulk-products-summary" class="subtle">Aún no has seleccionado un archivo.</p>
