@@ -302,6 +302,14 @@ async function adminApi(request, url, env) {
   }
   if (request.method === 'GET' && url.pathname === '/api/admin/orders') return adminListOrders(env.DB, url);
   if (request.method === 'POST' && url.pathname === '/api/admin/orders/status') return adminUpdateOrderStatus(env.DB, body);
+  if (request.method === 'POST' && url.pathname === '/api/admin/products/bulk') {
+    try {
+      return await adminBulkSave(env.DB, body);
+    } catch (error) {
+      console.error('adminBulkSave error:', error);
+      return json({ error: `Error al importar productos: ${String(error?.message || error).slice(0, 240)}` }, 500);
+    }
+  }
   if (request.method === 'POST' && url.pathname === '/api/admin/products') {
     try {
       return await adminSave(env.DB, body);
@@ -392,6 +400,27 @@ function priceForCost(cost) {
   else { contado = value * 1.2; credito = value * 1.3; }
   const round = (amount) => Math.round(amount / 100) * 100;
   return { contado: round(contado), credito: round(credito) };
+}
+
+async function adminBulkSave(db, body) {
+  if (!db) return json({ error: 'Falta vincular la base de datos D1 (DB).' }, 503);
+  const rows = Array.isArray(body.products) ? body.products : [];
+  if (!rows.length) return json({ error: 'El archivo no contiene productos válidos.' }, 400);
+  if (rows.length > 100) return json({ error: 'Puedes importar máximo 100 productos por lote.' }, 400);
+  const results = [];
+  for (let index = 0; index < rows.length; index += 1) {
+    const item = rows[index] && typeof rows[index] === 'object' ? { ...rows[index], csrf: body.csrf } : {};
+    try {
+      const response = await adminSave(db, item);
+      const data = await response.json();
+      if (!response.ok) results.push({ row: index + 2, ok: false, error: data.error || 'Fila inválida.' });
+      else results.push({ row: index + 2, ok: true, id: data.product?.id || '' });
+    } catch (error) {
+      results.push({ row: index + 2, ok: false, error: String(error?.message || error).slice(0, 220) });
+    }
+  }
+  const failed = results.filter((item) => !item.ok);
+  return json({ ok: failed.length === 0, processed: results.length - failed.length, failed: failed.length, results });
 }
 
 async function adminSave(db, body) {
