@@ -5,12 +5,21 @@
   let rows = [];
 
   const aliases = {
-    name: ['nombre', 'name', 'producto', 'product'],
+    name: ['nombre', 'nombre producto', 'name', 'producto', 'product'],
+    sku: ['referencia sku', 'referencia', 'sku', 'codigo', 'código'],
     brand: ['marca', 'brand'],
     cost: ['costo', 'cost', 'precio costo', 'precio_costo'],
-    stock: ['stock', 'existencias', 'unidades', 'inventario'],
-    category: ['categoria', 'categoría', 'category'],
-    description: ['descripcion', 'descripción', 'description', 'detalle'],
+    price: ['precio', 'price'],
+    discountPrice: ['precio con descuento', 'precio descuento', 'precio con descuento opcional', 'discount price'],
+    stock: ['stock', 'cantidad', 'existencias', 'unidades', 'inventario'],
+    category: ['categoria', 'categoría', 'categorias', 'categorías', 'category'],
+    description: ['descripcion', 'descripción', 'descripcion max 500 characters', 'description', 'detalle'],
+    variationName1: ['nombre variacion 1', 'nombre variación 1', 'nombre variacion 1 opcional'],
+    variationOption1: ['opcion variacion 1', 'opción variación 1', 'opcion variacion 1 opcional'],
+    variationName2: ['nombre variacion 2', 'nombre variación 2', 'nombre variacion 2 opcional'],
+    variationOption2: ['opcion variacion 2', 'opción variación 2', 'opcion variacion 2 opcional'],
+    variationPrice: ['opcion precio variacion', 'opción precio variación', 'precio variacion', 'precio variación'],
+    active: ['activo', 'active', 'estado'],
     image: ['imagen', 'image', 'foto', 'url imagen', 'url_imagen'],
     images: ['imagenes', 'imágenes', 'images', 'fotos', 'urls'],
     credit: ['credito', 'crédito', 'ofrecer credito', 'offer credit'],
@@ -37,17 +46,29 @@
 
   function toProduct(record) {
     const name = String(pick(record, aliases.name) || '').trim();
+    const sku = String(pick(record, aliases.sku) || '').trim();
     const category = String(pick(record, aliases.category) || '').trim();
     const image = String(pick(record, aliases.image) || '').trim();
     const imageList = String(pick(record, aliases.images) || '').split(/[|;\n]/).map((item) => item.trim()).filter(Boolean);
     const images = [...new Set([image, ...imageList])].slice(0, 8);
-    const cost = number(pick(record, aliases.cost));
+    const costValue = number(pick(record, aliases.cost));
+    const price = number(pick(record, aliases.price));
+    const discountPrice = number(pick(record, aliases.discountPrice));
+    const cost = costValue > 0 ? costValue : null;
     const stock = Math.max(0, Math.floor(number(pick(record, aliases.stock))));
+    const activeValue = String(pick(record, aliases.active) ?? '').trim().toLowerCase();
+    const active = activeValue === '' || !['no', 'false', '0', 'inactivo', 'inactive'].includes(activeValue);
+    const variations = [
+      { name: String(pick(record, aliases.variationName1) || '').trim(), option: String(pick(record, aliases.variationOption1) || '').trim() },
+      { name: String(pick(record, aliases.variationName2) || '').trim(), option: String(pick(record, aliases.variationOption2) || '').trim() },
+    ].filter((item) => item.name || item.option);
+    const variationPrice = number(pick(record, aliases.variationPrice));
     const credit = String(pick(record, aliases.credit)).toLowerCase();
     return {
-      name, brand: String(pick(record, aliases.brand) || '').trim(),
-      cost, stock, category, description: String(pick(record, aliases.description) || '').trim(),
-      image: images[0] || '', images,
+      name, sku, brand: String(pick(record, aliases.brand) || '').trim(),
+      cost, price, discountPrice, stock, active, category,
+      description: String(pick(record, aliases.description) || '').trim().slice(0, 500),
+      variations, variationPrice, image: images[0] || '', images,
       offerCredit: !['no', 'no ofrecer', 'false', '0'].includes(credit),
     };
   }
@@ -88,13 +109,13 @@
 
   function render() {
     const preview = $('#bulk-products-preview');
-    const valid = rows.filter((item) => item.name && item.category && item.cost > 0);
+    const valid = rows.filter((item) => item.name && item.category && (item.cost > 0 || item.price > 0 || item.discountPrice > 0));
     $('#bulk-products-summary').textContent = rows.length
       ? `${rows.length} filas detectadas; ${valid.length} listas para importar.`
       : 'Aún no has seleccionado un archivo.';
     preview.innerHTML = rows.slice(0, 100).map((item, index) => {
-      const ok = item.name && item.category && item.cost > 0;
-      const reason = ok ? 'Lista' : (!item.name ? 'Falta nombre' : !item.category ? 'Falta categoría' : 'Costo inválido');
+      const ok = item.name && item.category && (item.cost > 0 || item.price > 0 || item.discountPrice > 0);
+      const reason = ok ? 'Lista' : (!item.name ? 'Falta nombre' : !item.category ? 'Falta categoría' : 'Precio inválido');
       return `<tr><td>${index + 2}</td><td>${escapeHtml(item.name)}</td><td>${escapeHtml(item.category)}</td><td>${item.cost ? item.cost.toLocaleString('es-CO') : '—'}</td><td>${item.stock}</td><td class="${ok ? '' : 'danger-text'}">${reason}</td></tr>`;
     }).join('');
     $('#bulk-products-preview-wrap').hidden = !rows.length;
@@ -128,7 +149,7 @@
   });
 
   $('#bulk-products-submit').addEventListener('click', async () => {
-    const products = rows.filter((item) => item.name && item.category && item.cost > 0);
+    const products = rows.filter((item) => item.name && item.category && (item.cost > 0 || item.price > 0 || item.discountPrice > 0));
     const button = $('#bulk-products-submit');
     button.disabled = true; button.textContent = 'Importando…'; message('Guardando productos, espera un momento…');
     try {
