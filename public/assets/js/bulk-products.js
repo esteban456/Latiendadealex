@@ -31,8 +31,14 @@
 
   function pick(record, names) {
     const keys = Object.keys(record);
-    const key = keys.find((candidate) => names.includes(normalize(candidate)));
-    return key ? record[key] : '';
+    const normalizedNames = [...names].map(normalize).sort((a, b) => b.length - a.length);
+    const exact = keys.find((candidate) => normalizedNames.includes(normalize(candidate)));
+    if (exact) return record[exact];
+    const partial = keys.find((candidate) => {
+      const header = normalize(candidate);
+      return normalizedNames.some((name) => header.startsWith(`${name} `) || header.startsWith(`${name}(`));
+    });
+    return partial ? record[partial] : '';
   }
 
   function number(value, fallback = 0) {
