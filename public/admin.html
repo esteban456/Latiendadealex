@@ -253,7 +253,7 @@
             <div class="field span-2">
               <label>Imagen del producto</label>
               <div class="image-gallery-panel"><div class="image-gallery-heading"><strong>Fotos del producto</strong><span id="image-gallery-count" class="subtle">0 de 8</span></div><div id="image-gallery" class="image-gallery"></div></div>
-              <div class="image-row"><img id="image-preview" class="image-preview" alt="Foto principal del producto" hidden /><label class="upload-label">Subir varias imágenes<input id="image-file" type="file" accept="image/jpeg,image/png,image/webp" multiple /></label><span class="subtle image-upload-copy">Selecciona varias fotos a la vez, arrástralas aquí o pégalas con Ctrl+V. Puedes quitar fotos o elegir la principal. Hasta 8 imágenes.</span></div>
+              <div class="image-row"><img id="image-preview" class="image-preview" alt="Foto principal del producto" hidden /><label class="upload-label">Subir imágenes o ZIP<input id="image-file" type="file" accept="image/jpeg,image/png,image/webp,.zip,application/zip,application/x-zip-compressed" multiple /></label><span class="subtle image-upload-copy">Selecciona varias fotos, un ZIP con imágenes, arrástralas aquí o pégalas con Ctrl+V. Puedes quitar fotos o elegir la principal. Hasta 8 imágenes.</span></div>
               <input id="field-image" type="hidden" />
             </div>
           </div>
@@ -262,7 +262,8 @@
       </section>
     </div>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" defer></script>
-    <script src="assets/js/admin.js?v=20261102-upload-gallery-only" defer></script>
+    <script src="assets/js/zip-images.js?v=20261110-zip-images" defer></script>
+    <script src="assets/js/admin.js?v=20261110-zip-images" defer></script>
     <script src="assets/js/bulk-products.js?v=20261109-import-headers" defer></script>
     <script src="assets/js/bulk-images.js?v=20261026-no-bg-removal" defer></script>
   </body>

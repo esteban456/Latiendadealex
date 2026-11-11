@@ -567,10 +567,58 @@ $('#image-gallery').addEventListener('click', (event) => {
   else if (remove) productImages.splice(Number(remove.dataset.galleryRemove), 1);
   renderProductImageGallery();
 });
+function isZipFile(file) {
+  return window.AlxZip ? window.AlxZip.isZip(file) : /\.zip$/i.test(file?.name || '');
+}
+
+async function expandImageSelection(files) {
+  const images = [];
+  for (const file of files) {
+    if (!isZipFile(file)) {
+      if (file.type.startsWith('image/')) images.push(file);
+      continue;
+    }
+    if (!window.AlxZip) {
+      notice('No se pudo cargar el lector de ZIP. Recarga la página e inténtalo de nuevo.', 'error');
+      continue;
+    }
+    notice(`Abriendo ${file.name}…`);
+    try {
+      const extracted = await window.AlxZip.extractImages(file);
+      if (!extracted.length) {
+        notice(`El ZIP ${file.name} no contiene imágenes JPG, PNG o WebP.`, 'error');
+        continue;
+      }
+      images.push(...extracted);
+      notice(`${file.name}: ${extracted.length} imagen(es) encontrada(s).`);
+    } catch (error) {
+      notice(error.message || `No se pudo abrir ${file.name}.`, 'error');
+    }
+  }
+  return images;
+}
+
+async function uploadImageSelection(files) {
+  if (!files.length) return;
+  const room = 8 - productImages.length;
+  if (room <= 0) return notice('La galería ya tiene 8 fotos. Quita alguna antes de subir más.', 'error');
+  const selected = files.slice(0, room);
+  const skipped = files.length - selected.length;
+  const before = productImages.length;
+  for (const file of selected) {
+    if (productImages.length >= 8) break;
+    await uploadProductImage(file);
+  }
+  if (skipped > 0) {
+    notice(`Se agregaron ${productImages.length - before} foto(s). ${skipped} no se subieron porque la galería admite 8.`, 'error');
+  }
+}
+
 $('#image-file').addEventListener('change', async (event) => {
   const files = [...(event.target.files || [])];
   event.target.value = '';
-  for (const file of files) await uploadProductImage(file);
+  const images = await expandImageSelection(files);
+  await uploadImageSelection(images);
 });
 
 imageDropZone.addEventListener('dragenter', (event) => {
@@ -587,9 +635,10 @@ imageDropZone.addEventListener('dragleave', (event) => {
 imageDropZone.addEventListener('drop', async (event) => {
   event.preventDefault();
   imageDropZone.classList.remove('drag-active');
-  const files = [...(event.dataTransfer?.files || [])].filter((item) => item.type.startsWith('image/'));
-  if (!files.length) return notice('Arrastra archivos de imagen desde tu equipo.', 'error');
-  for (const file of files) await uploadProductImage(file);
+  const files = [...(event.dataTransfer?.files || [])];
+  const images = await expandImageSelection(files);
+  if (!images.length) return notice('Arrastra imágenes o un archivo ZIP con imágenes.', 'error');
+  await uploadImageSelection(images);
 });
 
 document.addEventListener('paste', async (event) => {
