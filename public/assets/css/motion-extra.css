@@ -1,0 +1,62 @@
+/* Fluidez adicional para la tienda pública. Se carga al final para no
+   sobrescribir colores ni medidas; solo suaviza movimientos y estados. */
+html { scroll-padding-top: 96px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  body:has(header.header) header.header {
+    transition: box-shadow .28s ease, background-color .28s ease, border-color .28s ease;
+  }
+  body:has(header.header) header.header.is-scrolled {
+    box-shadow: 0 10px 30px rgb(0 0 0 / 12%);
+  }
+
+  body:has(header.header) .btn,
+  body:has(header.header) button.button,
+  body:has(header.header) .icon-btn,
+  body:has(header.header) .chip,
+  body:has(header.header) .view-btn,
+  body:has(header.header) .hamburger {
+    transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease, border-color .2s ease, color .2s ease;
+  }
+  body:has(header.header) .btn:hover,
+  body:has(header.header) button.button:hover,
+  body:has(header.header) .icon-btn:hover,
+  body:has(header.header) .chip:hover,
+  body:has(header.header) .view-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgb(0 0 0 / 10%);
+  }
+  body:has(header.header) .btn:active,
+  body:has(header.header) button.button:active,
+  body:has(header.header) .icon-btn:active {
+    transform: translateY(0) scale(.98);
+    box-shadow: none;
+  }
+
+  body:has(header.header) .card-media,
+  body:has(header.header) .cat-card {
+    overflow: hidden;
+  }
+  body:has(header.header) .card-media img {
+    transition: transform .5s cubic-bezier(.2, .7, .2, 1);
+  }
+  body:has(header.header) .card:hover .card-media img {
+    transform: scale(1.05);
+  }
+
+  body:has(header.header) .link-more {
+    transition: transform .2s ease, color .2s ease;
+  }
+  body:has(header.header) .link-more:hover {
+    transform: translateX(3px);
+  }
+
+  body:has(header.header) input,
+  body:has(header.header) textarea,
+  body:has(header.header) select {
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+}
+
+/* Con "reducir movimiento" no se aplica nada de lo anterior: el navegador
+   ya respeta la regla global de storefront.css y todo queda como estaba. */

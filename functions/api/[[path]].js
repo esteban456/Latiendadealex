@@ -296,6 +296,14 @@ async function adminApi(request, url, env) {
       return json({ error: 'No se pudo consultar el catálogo en D1.', detail }, 500);
     }
   }
+  if (request.method === 'GET' && url.pathname === '/api/admin/products/codes') {
+    try {
+      return await adminProductCodes(env.DB);
+    } catch (error) {
+      console.error('adminProductCodes error:', error);
+      return json({ error: 'No se pudieron consultar los códigos de productos.', detail: String(error?.message || error).slice(0, 240) }, 500);
+    }
+  }
   if (request.method === 'POST' && url.pathname === '/api/admin/categories/reclassify') {
     try { return await reclassifyStoredProducts(env.DB); }
     catch (error) { console.error('reclassify categories error:', error); return json({ error: 'No se pudieron clasificar las categorías. ' + String(error?.message || error).slice(0, 220) }, 500); }
@@ -308,6 +316,14 @@ async function adminApi(request, url, env) {
     } catch (error) {
       console.error('adminBulkSave error:', error);
       return json({ error: `Error al importar productos: ${String(error?.message || error).slice(0, 240)}` }, 500);
+    }
+  }
+  if (request.method === 'POST' && url.pathname === '/api/admin/products/images') {
+    try {
+      return await adminAddImages(env.DB, body);
+    } catch (error) {
+      console.error('adminAddImages error:', error);
+      return json({ error: `Error al asignar imágenes: ${String(error?.message || error).slice(0, 240)}` }, 500);
     }
   }
   if (request.method === 'POST' && url.pathname === '/api/admin/products') {
@@ -353,6 +369,46 @@ async function adminList(db, url, env) {
   const meta = await db.prepare("SELECT data FROM catalog_meta WHERE id = 'catalog'").first();
   const catalog = meta?.data ? JSON.parse(meta.data) : { categories: [] };
   return json({ products: products.slice(offset, offset + limit).map((product) => withImageKit(product, env)), total: products.length, offset, limit, categories: catalog.categories || [], summary });
+}
+
+function normalizeMatchCode(value) {
+  return String(value || '').toLowerCase().replace(/[_\s]+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+function productMatchCodes(product) {
+  const codes = new Set();
+  const add = (value) => { const code = normalizeMatchCode(value); if (code) codes.add(code); };
+  add(product.sku);
+  add(product.reference);
+  add(String(product.id || '').replace(/^import-/, '').replace(/^admin-/, ''));
+  for (const variant of product.variants || []) {
+    const sku = normalizeMatchCode(variant.sku);
+    if (!sku) continue;
+    add(sku);
+    add(sku.replace(/-(contado|credito|precio-unico)(-credito)?$/, ''));
+  }
+  return [...codes];
+}
+
+async function adminProductCodes(db) {
+  if (!db) return json({ error: 'Falta vincular la base de datos D1 (DB).' }, 503);
+  const rows = (await db.prepare('SELECT data FROM products').all()).results || [];
+  const products = rows.map((row) => {
+    const product = JSON.parse(row.data);
+    const images = Array.isArray(product.images) && product.images.length
+      ? product.images.filter(Boolean)
+      : (product.image ? [product.image] : []);
+    return {
+      id: product.id,
+      name: product.name || '',
+      brand: product.brand || '',
+      category: (product.categories || [])[0]?.name || product.category || '',
+      imageBackground: product.imageBackground || '',
+      imageCount: images.length,
+      codes: productMatchCodes(product),
+    };
+  });
+  return json({ products, total: products.length });
 }
 
 async function adminListOrders(db, url) {
@@ -483,6 +539,45 @@ async function adminSave(db, body) {
   await db.prepare('INSERT INTO products (id, data) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET data = excluded.data').bind(product.id, JSON.stringify(product)).run();
   await refreshCatalogMeta(db);
   return json({ ok: true, product });
+}
+
+async function adminAddImages(db, body) {
+  if (!db) return json({ error: 'Falta vincular la base de datos D1 (DB).' }, 503);
+  const items = (Array.isArray(body.items) ? body.items : []).slice(0, 100);
+  if (!items.length) return json({ error: 'No hay imágenes para asignar.' }, 400);
+  const safeImageUrl = (value) => {
+    const url = clean(value, 2000);
+    return /^(https?:\/\/|\/(?!\/))/i.test(url) ? url : '';
+  };
+  const rows = (await db.prepare('SELECT id, data FROM products').all()).results || [];
+  const products = new Map(rows.map((row) => [row.id, JSON.parse(row.data)]));
+  const updates = [];
+  const results = [];
+  const skipped = [];
+  for (const item of items) {
+    const id = clean(item.id, 120);
+    if (!id) continue;
+    const product = products.get(id);
+    if (!product) { skipped.push({ id, reason: 'No encontrado' }); continue; }
+    const additions = (Array.isArray(item.images) ? item.images : []).map(safeImageUrl).filter(Boolean);
+    if (!additions.length) { skipped.push({ id, reason: 'Sin imágenes válidas' }); continue; }
+    const current = Array.isArray(product.images) && product.images.length
+      ? product.images.filter(Boolean)
+      : (product.image ? [product.image] : []);
+    const images = [...new Set([...current, ...additions])].slice(0, 8);
+    if (!images.length) { skipped.push({ id, reason: 'Sin espacio' }); continue; }
+    product.images = images;
+    if (!product.image || !images.includes(product.image)) product.image = images[0];
+    updates.push({ id, data: JSON.stringify(product) });
+    results.push({ id, images });
+  }
+  if (!updates.length) return json({ error: 'No se encontraron productos para actualizar.', skipped }, 404);
+  for (let index = 0; index < updates.length; index += 100) {
+    await db.batch(updates.slice(index, index + 100).map((item) =>
+      db.prepare('UPDATE products SET data = ? WHERE id = ?').bind(item.data, item.id)));
+  }
+  await refreshCatalogMeta(db);
+  return json({ ok: true, updated: results.length, results, skipped });
 }
 
 async function adminDelete(db, id) {

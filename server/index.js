@@ -189,8 +189,10 @@ async function api(req, res, url) {
     }
 
     if (route === 'GET /api/admin/products') return adminListProducts(res, url);
+    if (route === 'GET /api/admin/products/codes') return adminProductCodes(res);
     if (route === 'GET /api/admin/orders') return adminListOrders(res, url);
     if (route === 'POST /api/admin/orders/status') return adminUpdateOrderStatus(res, req.adminBody);
+    if (route === 'POST /api/admin/products/images') return adminAddImages(res, req.adminBody);
     if (route === 'POST /api/admin/products') return adminSaveProduct(res, req.adminBody);
     if (route === 'DELETE /api/admin/products') return adminDeleteProduct(res, req.adminBody);
     if (route === 'POST /api/admin/upload') return adminUploadImage(req, res, req.adminBody);
@@ -497,6 +499,44 @@ async function adminListProducts(res, url) {
   return json(res, 200, { products: filtered.slice(offset, offset + limit).map(withImageKit), total: filtered.length, offset, limit, categories: catalog.categories || [], summary });
 }
 
+function normalizeMatchCode(value) {
+  return String(value || '').toLowerCase().replace(/[_\s]+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+function productMatchCodes(product) {
+  const codes = new Set();
+  const add = (value) => { const code = normalizeMatchCode(value); if (code) codes.add(code); };
+  add(product.sku);
+  add(product.reference);
+  add(String(product.id || '').replace(/^import-/, '').replace(/^admin-/, ''));
+  for (const variant of product.variants || []) {
+    const sku = normalizeMatchCode(variant.sku);
+    if (!sku) continue;
+    add(sku);
+    add(sku.replace(/-(contado|credito|precio-unico)(-credito)?$/, ''));
+  }
+  return [...codes];
+}
+
+async function adminProductCodes(res) {
+  const catalog = await readJsonFile(CATALOG_FILE, { products: [], categories: [] });
+  const products = (catalog.products || []).map((product) => {
+    const images = Array.isArray(product.images) && product.images.length
+      ? product.images.filter(Boolean)
+      : (product.image ? [product.image] : []);
+    return {
+      id: product.id,
+      name: product.name || '',
+      brand: product.brand || '',
+      category: (product.categories || [])[0]?.name || product.category || '',
+      imageBackground: product.imageBackground || '',
+      imageCount: images.length,
+      codes: productMatchCodes(product),
+    };
+  });
+  return json(res, 200, { products, total: products.length });
+}
+
 async function adminListOrders(res, url) {
   const all = (await readJsonFile(ORDERS_FILE, [])).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
   const query = normalizeText(url.searchParams.get('q') || '').trim();
@@ -598,6 +638,35 @@ async function adminSaveProduct(res, body) {
   else catalog.products.unshift(product);
   await writeCatalog(catalog);
   return json(res, 200, { ok: true, product, total: catalog.products.length });
+}
+
+async function adminAddImages(res, body) {
+  const items = (Array.isArray(body.items) ? body.items : []).slice(0, 100);
+  if (!items.length) return json(res, 400, { error: 'No hay imágenes para asignar.' });
+  const safeImageUrl = (value) => {
+    const url = clean(value, 2000);
+    return /^(https?:\/\/|\/(?!\/))/i.test(url) ? url : '';
+  };
+  const catalog = await readJsonFile(CATALOG_FILE, { products: [], categories: [] });
+  const results = [];
+  const skipped = [];
+  for (const item of items) {
+    const product = catalog.products.find((entry) => entry.id === item.id);
+    if (!product) { skipped.push({ id: item.id, reason: 'No encontrado' }); continue; }
+    const additions = (Array.isArray(item.images) ? item.images : []).map(safeImageUrl).filter(Boolean);
+    if (!additions.length) { skipped.push({ id: item.id, reason: 'Sin imágenes válidas' }); continue; }
+    const current = Array.isArray(product.images) && product.images.length
+      ? product.images.filter(Boolean)
+      : (product.image ? [product.image] : []);
+    const images = [...new Set([...current, ...additions])].slice(0, 8);
+    if (!images.length) { skipped.push({ id: item.id, reason: 'Sin espacio' }); continue; }
+    product.images = images;
+    if (!product.image || !images.includes(product.image)) product.image = images[0];
+    results.push({ id: product.id, images });
+  }
+  if (!results.length) return json(res, 404, { error: 'No se encontraron productos para actualizar.', skipped });
+  await writeCatalog(catalog);
+  return json(res, 200, { ok: true, updated: results.length, results, skipped });
 }
 
 async function adminDeleteProduct(res, body) {

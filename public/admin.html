@@ -51,6 +51,7 @@
       .row-actions { display: flex; gap: 7px; white-space: nowrap; }
       .small-button { padding: 6px 9px; border: 1px solid var(--line); border-radius: 7px; background: white; color: var(--ink); font-size: .82rem; font-weight: 700; }
       .danger-text { color: #b42318; }
+      .success-text { color: #067647; }
       .pagination { display: flex; justify-content: space-between; align-items: center; padding: 13px 15px; color: var(--muted); font-size: .9rem; }
       .pagination > div { display: flex; gap: 8px; }
       .empty { padding: 48px 20px; color: var(--muted); text-align: center; }
@@ -156,7 +157,7 @@
       </section>
       <section class="admin-tools" aria-label="Herramientas del catálogo">
         <button id="export-csv" class="button secondary" type="button">Exportar resultados CSV</button>
-        <button id="backup-json" class="button secondary" type="button">Descargar respaldo JSON</button><button id="bulk-products-open" class="button secondary" type="button">Importar Excel/CSV</button>
+        <button id="backup-json" class="button secondary" type="button">Descargar respaldo JSON</button><button id="bulk-products-open" class="button secondary" type="button">Importar Excel/CSV</button><button id="bulk-zip-open" class="button secondary" type="button">Importar imágenes ZIP</button>
       </section>
       <section class="table-card">
         <div id="empty-state" class="empty" hidden>No se encontraron productos.</div>
@@ -219,6 +220,18 @@
       </section>
     </div>
 
+    <div id="bulk-zip-modal" class="modal" hidden>
+      <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="bulk-zip-title">
+        <header class="modal-heading"><h2 id="bulk-zip-title">Importar imágenes por código</h2><button id="bulk-zip-close" class="close" type="button" aria-label="Cerrar">×</button></header>
+        <p class="subtle">Sube un ZIP con imágenes. El nombre de cada archivo debe ser el código o SKU del producto (ejemplo: <code>CON12102026_001.png</code>). Se agregarán automáticamente al producto que tenga ese código. Si el producto ya tiene 8 fotos, se omite. Los códigos repetidos o sin producto no se suben.</p>
+        <div id="bulk-zip-notice" class="notice" role="status" aria-live="polite" hidden></div>
+        <label class="upload-label" for="bulk-zip-file">Elegir ZIP <input id="bulk-zip-file" type="file" accept=".zip,application/zip,application/x-zip-compressed" /></label>
+        <p id="bulk-zip-summary" class="subtle">Aún no has seleccionado un ZIP.</p>
+        <div class="table-card" id="bulk-zip-preview-wrap" hidden><div class="table-scroll"><table><thead><tr><th>Imagen</th><th>Código</th><th>Producto</th><th>Estado</th></tr></thead><tbody id="bulk-zip-preview"></tbody></table></div></div>
+        <div class="form-actions"><button id="bulk-zip-cancel" class="button secondary" type="button">Cancelar</button><button id="bulk-zip-submit" class="button" type="button" disabled>Asignar imágenes</button></div>
+      </section>
+    </div>
+
     <div id="product-editor" class="modal" hidden>
       <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="edit-title">
         <header class="modal-heading"><h2 id="edit-title">Agregar producto</h2><button id="close-editor" class="close" type="button" aria-label="Cerrar">×</button></header>
@@ -265,6 +278,7 @@
     <script src="assets/js/zip-images.js?v=20261110-zip-images" defer></script>
     <script src="assets/js/admin.js?v=20261110-zip-images" defer></script>
     <script src="assets/js/bulk-products.js?v=20261109-import-headers" defer></script>
+    <script src="assets/js/bulk-zip-images.js?v=20261110-zip-codes" defer></script>
     <script src="assets/js/bulk-images.js?v=20261026-no-bg-removal" defer></script>
   </body>
 </html>
