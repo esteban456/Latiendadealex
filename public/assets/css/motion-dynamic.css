@@ -1,156 +1,125 @@
-/* Animaciones más dinámicas para la tienda pública.
-   Se carga después de motion-extra.css y solo actúa si no hay "reducir movimiento". */
-@keyframes alx-hero-breathe {
-  0%, 100% { transform: scale(1.015); }
-  50% { transform: scale(1.055); }
-}
-@keyframes alx-sheen {
-  0%, 55% { transform: translateX(-130%); }
-  80%, 100% { transform: translateX(130%); }
-}
-@keyframes alx-spin { to { transform: rotate(360deg); } }
-@keyframes alx-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-@keyframes alx-pop {
-  0% { transform: scale(.6) rotate(-12deg); opacity: 0; }
-  60% { transform: scale(1.18) rotate(4deg); opacity: 1; }
-  100% { transform: scale(1) rotate(0); opacity: 1; }
-}
-@keyframes alx-title-in {
-  from { clip-path: inset(0 100% 0 0); transform: translateX(-10px); opacity: .4; }
-  to { clip-path: inset(0 0 0 0); transform: none; opacity: 1; }
-}
-@keyframes alx-card-shine {
-  from { transform: translateX(-130%); }
-  to { transform: translateX(130%); }
-}
-@keyframes alx-badge-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.06); }
+/* Movimiento uniforme para toda La Tienda de Alex. */
+@keyframes alx-progress-glow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.35); }
 }
 @keyframes alx-ripple {
-  from { transform: scale(0); opacity: .4; }
-  to { transform: scale(2.8); opacity: 0; }
+  from { transform: scale(0); opacity: .34; }
+  to { transform: scale(4); opacity: 0; }
+}
+@keyframes alx-modal-in {
+  from { opacity: 0; transform: translateY(22px) scale(.975); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.alx-progress {
+  position: fixed;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 3px;
+  z-index: 9999;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(90deg, #f6a623, #ed6c30 55%, #d84c68);
+  box-shadow: 0 0 12px rgb(237 108 48 / 42%);
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  /* Barra fina de progreso de lectura (la crea motion.js). */
-  .alx-progress {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    z-index: 9999;
-    transform: scaleX(0);
-    transform-origin: left center;
-    background: linear-gradient(90deg, #ffb020, #ff6b3d, #e11d48);
-    pointer-events: none;
-  }
-
-  /* Portada viva: respiración + brillo que cruza. */
-  body:has(header.header) .hero {
-    position: relative;
-    overflow: hidden;
-  }
-  body:has(header.header) .hero img {
-    animation: alx-hero-breathe 16s ease-in-out infinite;
-    transform-origin: center;
-  }
-  body:has(header.header) .hero::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(110deg, transparent 32%, rgba(255, 255, 255, .16) 48%, transparent 64%);
-    transform: translateX(-130%);
-    animation: alx-sheen 11s ease-in-out infinite;
-  }
-
-  /* Cinta de descubrimiento en movimiento. */
-  body:has(header.header) .discovery-orbit { animation: alx-spin 24s linear infinite; }
-  body:has(header.header) .discovery-step i { animation: alx-float 3.4s ease-in-out infinite; }
-  body:has(header.header) .discovery-step:nth-child(2) i { animation-delay: .45s; }
-  body:has(header.header) .discovery-step:nth-child(3) i { animation-delay: .9s; }
-
-  /* Títulos que se dibujan al entrar en pantalla. */
-  body:has(header.header) .section.is-visible .section-head h2 {
-    animation: alx-title-in .7s cubic-bezier(.2, .8, .2, 1) both;
-  }
-  body:has(header.header) .section.is-visible .section-head .eyebrow {
-    animation: alx-title-in .6s .08s cubic-bezier(.2, .8, .2, 1) both;
-  }
-
-  /* Tarjetas de producto con entrada más marcada. */
-  body:has(header.header) .card.motion-reveal {
+  .motion-reveal {
     opacity: 0;
-    transform: translate3d(0, 26px, 0) scale(.965) rotate(-.5deg);
-    transition: opacity .5s ease var(--motion-delay, 0ms),
-                transform .65s cubic-bezier(.18, .85, .25, 1) var(--motion-delay, 0ms);
+    transform: translate3d(0, 34px, 0) scale(.975);
+    filter: blur(4px);
+    transition: opacity .62s ease var(--motion-delay, 0ms),
+                transform .76s cubic-bezier(.18, .82, .22, 1) var(--motion-delay, 0ms),
+                filter .68s ease var(--motion-delay, 0ms);
+    will-change: opacity, transform, filter;
   }
-  body:has(header.header) .card.motion-reveal.is-visible {
+  .motion-reveal.is-visible {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1) rotate(0);
+    transform: none;
+    filter: none;
+    will-change: auto;
   }
 
-  /* Brillo al pasar el mouse sobre la foto y latido de insignias. */
-  body:has(header.header) .card-media {
-    position: relative;
-  }
-  body:has(header.header) .card-media::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(110deg, transparent 25%, rgba(255, 255, 255, .28) 48%, transparent 70%);
-    transform: translateX(-130%);
-  }
-  body:has(header.header) .card:hover .card-media::after {
-    animation: alx-card-shine .8s ease-out;
-  }
-  body:has(header.header) .card .badge {
-    animation: alx-badge-pulse 3.2s ease-in-out infinite;
-  }
-  body:has(header.header) .card .badge:nth-child(2) { animation-delay: .4s; }
-  body:has(header.header) .card .badge:nth-child(3) { animation-delay: .8s; }
+  .alx-progress { animation: alx-progress-glow 2.8s ease-in-out infinite; }
 
-  /* Categorías y servicios con iconos flotantes y salto al hover. */
-  body:has(header.header) .cat-card .cat-icon,
-  body:has(header.header) .service-card .service-icon {
-    animation: alx-float 4s ease-in-out infinite;
+  .card, .cat-card, .service-card, .offer-main, .offer-small,
+  .admin-stat, .login-card, .account-panel, .account-aside,
+  .table-card, .product-thumb {
+    transition: transform .28s cubic-bezier(.2, .7, .2, 1),
+                box-shadow .28s ease, border-color .28s ease;
   }
-  body:has(header.header) .cat-card:nth-child(2) .cat-icon,
-  body:has(header.header) .service-card:nth-child(2) .service-icon { animation-delay: .3s; }
-  body:has(header.header) .cat-card:nth-child(3) .cat-icon,
-  body:has(header.header) .service-card:nth-child(3) .service-icon { animation-delay: .6s; }
-  body:has(header.header) .cat-card:nth-child(4) .cat-icon,
-  body:has(header.header) .service-card:nth-child(4) .service-icon { animation-delay: .9s; }
-  body:has(header.header) .cat-card:nth-child(5) .cat-icon,
-  body:has(header.header) .service-card:nth-child(5) .service-icon { animation-delay: 1.2s; }
-  body:has(header.header) .cat-card:hover .cat-icon,
-  body:has(header.header) .service-card:hover .service-icon {
-    animation: alx-pop .55s cubic-bezier(.2, .8, .2, 1);
+  .card:hover, .cat-card:hover, .service-card:hover,
+  .offer-main:hover, .offer-small:hover, .admin-stat:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 36px rgb(23 33 43 / 12%);
+  }
+  .card-media img, .cat-card img, .product-thumb, .image-preview,
+  .image-gallery-item img {
+    transition: transform .45s cubic-bezier(.2, .75, .25, 1);
+  }
+  .card:hover .card-media img, .cat-card:hover img { transform: scale(1.075); }
+
+  .btn, .button, .icon-btn, .chip, .view-btn, .hamburger,
+  .account-submit, .provider-button, .account-tab, .small-button,
+  .upload-label, .qty button, .close {
+    transition: transform .2s cubic-bezier(.2, .75, .25, 1),
+                box-shadow .22s ease, background-color .22s ease,
+                border-color .22s ease, color .22s ease;
+  }
+  .btn:hover, .button:hover, .icon-btn:hover, .chip:hover,
+  .view-btn:hover, .account-submit:hover, .provider-button:hover,
+  .account-tab:hover, .small-button:hover, .upload-label:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgb(23 33 43 / 13%);
+  }
+  .btn:active, .button:active, .icon-btn:active, .account-submit:active,
+  .small-button:active, .qty button:active {
+    transform: translateY(1px) scale(.975);
+    box-shadow: none;
   }
 
-  /* Onda al pulsar botones (la crea motion.js). */
-  body:has(header.header) .btn,
-  body:has(header.header) .icon-btn,
-  body:has(header.header) .chip,
-  body:has(header.header) .view-btn,
-  body:has(header.header) .hamburger {
+  .header, .topbar, .login-header {
+    transition: box-shadow .3s ease, background-color .3s ease, border-color .3s ease;
+  }
+  .header.is-scrolled { box-shadow: 0 12px 32px rgb(23 33 43 / 13%); }
+
+  .product .gallery, .image-gallery-item, .product-image-wrap {
+    transition: transform .35s ease, box-shadow .35s ease;
+  }
+  .product .gallery:hover, .image-gallery-item:hover { box-shadow: 0 16px 38px rgb(23 33 43 / 12%); }
+  input, textarea, select {
+    transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+  }
+
+  .modal:not([hidden]) .modal-card { animation: alx-modal-in .36s cubic-bezier(.2, .8, .2, 1) both; }
+
+  .btn, .button, .icon-btn, .chip, .view-btn, .hamburger,
+  .account-submit, .provider-button, .small-button, .qty button {
     position: relative;
     overflow: hidden;
   }
   .alx-ripple {
     position: absolute;
-    width: 16px;
-    height: 16px;
-    margin: -8px 0 0 -8px;
+    z-index: 2;
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
     border-radius: 50%;
     background: currentColor;
     pointer-events: none;
-    animation: alx-ripple .6s ease-out forwards;
+    animation: alx-ripple .62s ease-out forwards;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+  .motion-reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
+  .alx-progress { animation: none !important; }
 }
