@@ -1,0 +1,164 @@
+/* Capa de movimiento "beauty" para la tienda pública.
+   Se carga al final: respeta el sistema professional y añade detalles visuales. */
+@keyframes alx-orb-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(18px, -22px, 0) scale(1.12); }
+}
+@keyframes alx-orbit-spin { to { transform: rotate(360deg); } }
+@keyframes alx-icon-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+@keyframes alx-icon-pop {
+  0% { transform: scale(.6) rotate(-12deg); }
+  60% { transform: scale(1.2) rotate(5deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+@keyframes alx-sheen {
+  0%, 45% { transform: translateX(-130%); }
+  80%, 100% { transform: translateX(130%); }
+}
+@keyframes alx-underline {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Portada: luces suaves + parallax ligero controlado por motion-beauty.js.
+     Usamos elementos propios para no sobrescribir los decorativos existentes. */
+  .hero {
+    position: relative;
+    overflow: hidden;
+  }
+  .alx-orb {
+    position: absolute;
+    z-index: 2;
+    border-radius: 50%;
+    filter: blur(38px);
+    pointer-events: none;
+    mix-blend-mode: soft-light;
+    opacity: .62;
+  }
+  .alx-orb--one {
+    width: min(46vw, 520px);
+    aspect-ratio: 1;
+    left: -8%;
+    top: -20%;
+    background: radial-gradient(circle at 30% 30%, rgb(255 176 74 / .5), transparent 68%);
+    animation: alx-orb-drift 14s ease-in-out infinite;
+  }
+  .alx-orb--two {
+    width: min(38vw, 430px);
+    aspect-ratio: 1;
+    right: -6%;
+    bottom: -26%;
+    background: radial-gradient(circle at 70% 70%, rgb(224 76 104 / .42), transparent 70%);
+    animation: alx-orb-drift 18s ease-in-out -6s infinite;
+  }
+  .hero img {
+    position: relative;
+    z-index: 1;
+    transform: translate3d(0, var(--hero-shift, 0px), 0) scale(1.12);
+    transition: transform .5s cubic-bezier(.2, .7, .2, 1);
+    will-change: transform;
+  }
+
+  /* Cinta de descubrimiento con órbita e iconos flotando. */
+  .discovery-orbit { animation: alx-orbit-spin 22s linear infinite; }
+  .discovery-step i { animation: alx-icon-float 3.2s ease-in-out infinite; }
+  .discovery-step:nth-child(2) i { animation-delay: .45s; }
+  .discovery-step:nth-child(3) i { animation-delay: .9s; }
+
+  /* Títulos: animamos el subrayado que ya existía, sin cambiar su estilo. */
+  .section-head h2::after {
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform .7s .28s cubic-bezier(.2, .8, .2, 1);
+  }
+  .section.is-visible .section-head h2::after { transform: scaleX(1); }
+
+  /* Entradas alternadas: unas tarjetas llegan de la izquierda y otras de la derecha. */
+  .card.motion-reveal,
+  .cat-card.motion-reveal,
+  .service-card.motion-reveal {
+    filter: blur(5px);
+  }
+  .card.motion-reveal:nth-child(odd),
+  .cat-card.motion-reveal:nth-child(odd),
+  .service-card.motion-reveal:nth-child(odd) {
+    transform: translate3d(-26px, 32px, 0) rotate(-1.2deg) scale(.96);
+  }
+  .card.motion-reveal:nth-child(even),
+  .cat-card.motion-reveal:nth-child(even),
+  .service-card.motion-reveal:nth-child(even) {
+    transform: translate3d(26px, 32px, 0) rotate(1.2deg) scale(.96);
+  }
+  .card.motion-reveal.is-visible,
+  .cat-card.motion-reveal.is-visible,
+  .service-card.motion-reveal.is-visible {
+    transform: none;
+    filter: none;
+  }
+
+  /* Tarjetas con inclinación 3D suave (variables las pone motion-beauty.js). */
+  .card { transform-style: preserve-3d; }
+  .card:hover,
+  .card.motion-reveal.is-visible:hover {
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-8px);
+    transition: transform .18s ease-out, box-shadow .28s ease, border-color .28s ease;
+  }
+
+  /* Brillo que cruza la foto al pasar el mouse. */
+  .card-media {
+    position: relative;
+    overflow: hidden;
+  }
+  .card-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / .32) 48%, transparent 66%);
+    transform: translateX(-130%);
+  }
+  .card:hover .card-media::after { animation: alx-sheen .85s ease-out; }
+
+  /* Iconos de categorías y servicios. */
+  .cat-icon,
+  .service-icon {
+    animation: alx-icon-float 4s ease-in-out infinite;
+  }
+  .cat-card:nth-child(2) .cat-icon,
+  .service-card:nth-child(2) .service-icon { animation-delay: .3s; }
+  .cat-card:nth-child(3) .cat-icon,
+  .service-card:nth-child(3) .service-icon { animation-delay: .6s; }
+  .cat-card:nth-child(4) .cat-icon,
+  .service-card:nth-child(4) .service-icon { animation-delay: .9s; }
+  .cat-card:nth-child(5) .cat-icon,
+  .service-card:nth-child(5) .service-icon { animation-delay: 1.2s; }
+  .cat-card:hover .cat-icon,
+  .service-card:hover .service-icon {
+    animation: alx-icon-pop .55s cubic-bezier(.2, .8, .2, 1);
+  }
+
+  /* Barrido de luz en la promoción principal. */
+  .promo-banner {
+    position: relative;
+    overflow: hidden;
+  }
+  .promo-banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(115deg, transparent 35%, rgb(255 255 255 / .18) 50%, transparent 65%);
+    transform: translateX(-130%);
+    animation: alx-sheen 9s ease-in-out infinite;
+  }
+
+  /* Botones con halo al pasar el mouse. */
+  .btn:hover,
+  .button:hover {
+    box-shadow: 0 10px 24px rgb(237 108 48 / 24%), inset 0 0 0 1px rgb(255 255 255 / 14%);
+  }
+}
