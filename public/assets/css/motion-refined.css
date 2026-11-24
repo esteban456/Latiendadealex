@@ -1,0 +1,69 @@
+/* Movimiento refinado: transiciones suaves y elegantes, sin desplazamientos laterales. */
+@media (prefers-reduced-motion: no-preference) {
+  /* Entradas: solo fundido y una elevación muy pequeña. */
+  .motion-reveal {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+    filter: none;
+    transition: opacity .6s ease var(--motion-delay, 0ms),
+                transform .75s cubic-bezier(.22, .68, .24, 1) var(--motion-delay, 0ms);
+    will-change: opacity, transform;
+  }
+  .motion-reveal.is-visible {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    will-change: auto;
+  }
+
+  /* Tarjetas: elevación mínima y sombra suave, sin giros. */
+  .card, .cat-card, .service-card, .offer-main, .offer-small,
+  .admin-stat, .login-card, .account-panel, .account-aside,
+  .table-card, .product-thumb {
+    transition: transform .4s cubic-bezier(.22, .68, .24, 1),
+                box-shadow .4s ease, border-color .4s ease;
+  }
+  .card:hover, .cat-card:hover, .service-card:hover,
+  .offer-main:hover, .offer-small:hover, .admin-stat:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgb(23 33 43 / 8%);
+  }
+
+  /* Fotos: aumento apenas perceptible. */
+  .card-media img, .cat-card img, .product-thumb, .image-preview,
+  .image-gallery-item img {
+    transition: transform .7s ease;
+  }
+  .card:hover .card-media img, .cat-card:hover img { transform: scale(1.035); }
+
+  /* Botones: respuesta tenue al pasar y hundimiento mínimo al pulsar. */
+  .btn, .button, .icon-btn, .chip, .view-btn, .hamburger,
+  .account-submit, .provider-button, .account-tab, .small-button,
+  .upload-label, .qty button, .close {
+    transition: transform .28s ease, box-shadow .28s ease,
+                background-color .28s ease, border-color .28s ease, color .28s ease;
+  }
+  .btn:hover, .button:hover, .icon-btn:hover, .chip:hover,
+  .view-btn:hover, .account-submit:hover, .provider-button:hover,
+  .account-tab:hover, .small-button:hover, .upload-label:hover {
+    transform: none;
+    box-shadow: 0 7px 16px rgb(23 33 43 / 9%);
+  }
+  .btn:active, .button:active, .icon-btn:active, .account-submit:active,
+  .small-button:active, .qty button:active {
+    transform: scale(.99);
+    box-shadow: none;
+  }
+
+  /* Cabecera y subrayados: fundidos, sin movimiento lateral. */
+  .header, .topbar, .login-header {
+    transition: box-shadow .45s ease, background-color .45s ease, border-color .45s ease;
+  }
+  .header.is-scrolled { box-shadow: 0 8px 22px rgb(23 33 43 / 8%); }
+  .section-head h2::after {
+    opacity: 0;
+    transform: none;
+    transition: opacity .8s .2s ease;
+  }
+  .section.is-visible .section-head h2::after { opacity: 1; }
+}
