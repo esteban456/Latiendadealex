@@ -1,0 +1,142 @@
+/* Mejora tipográfica de la tienda pública.
+   Se carga al final para corregir el Arial que imponía storefront.css
+   y dar una jerarquía más limpia, moderna y legible. */
+:root {
+  --font: 'Manrope', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --display: 'Plus Jakarta Sans', 'Manrope', system-ui, sans-serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 15.5px;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: .005em;
+  -webkit-font-smoothing: antialiased;
+  font-optical-sizing: auto;
+}
+
+/* storefront.css fuerza Arial cuando existe header.header: lo corregimos aquí. */
+body:has(header.header),
+body:has(.mobile-app-nav) {
+  font-family: var(--font);
+  color: var(--ink, #20252b);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--display);
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: -.035em;
+}
+
+strong, b { font-weight: 700; }
+
+small {
+  font-size: .82rem;
+  line-height: 1.5;
+}
+
+body:has(header.header) .section-head h2 {
+  font-family: var(--display);
+  font-size: clamp(1.45rem, 2.6vw, 2.05rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -.03em;
+}
+
+body:has(header.header) .section-head .eyebrow {
+  font-family: var(--font);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+}
+
+body:has(header.header) .logo-text {
+  font-family: var(--display);
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+body:has(header.header) .main-nav a,
+body:has(header.header) .nav a {
+  font-family: var(--font);
+  font-weight: 600;
+  letter-spacing: .005em;
+}
+
+body:has(header.header) .btn,
+body:has(header.header) button.button {
+  font-family: var(--font);
+  font-size: .92rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+}
+
+body:has(header.header) .card-name,
+body:has(header.header) .card-brand,
+body:has(header.header) .product-name {
+  font-family: var(--display);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -.015em;
+}
+
+body:has(header.header) .card-description,
+body:has(header.header) .card-installments,
+body:has(header.header) .card-delivery,
+body:has(header.header) .card-credit {
+  font-family: var(--font);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+body:has(header.header) .card-price,
+body:has(header.header) .price-big,
+body:has(header.header) .offer-price-new,
+body:has(header.header) .alex-price {
+  font-family: var(--display);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+body:has(header.header) .price-old {
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+body:has(header.header) .badge,
+body:has(header.header) .tag {
+  font-family: var(--font);
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+body:has(header.header) .topbar,
+body:has(header.header) .announce-bar__slide {
+  font-family: var(--font);
+  font-weight: 500;
+  letter-spacing: .01em;
+}
+
+body:has(header.header) input,
+body:has(header.header) textarea,
+body:has(header.header) select {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  body:has(header.header) .section-head h2 {
+    font-size: 1.32rem;
+    letter-spacing: -.02em;
+  }
+}
