@@ -1,0 +1,30 @@
+/* Ambientación navideña ligera para toda la tienda. */
+:root { --holiday-red:#a92332; --holiday-green:#176b4d; --holiday-gold:#c49a45; }
+body:has(header.header) .topbar { background:linear-gradient(90deg,#173b30,#102c24 55%,#173b30); }
+body:has(header.header) .header { border-bottom:2px solid #b99245; }
+body:has(header.header) .header::before {
+  content:""; display:block; height:3px;
+  background:linear-gradient(90deg,#a92332 0 33.3%,#f0dfb2 33.3% 66.6%,#176b4d 66.6%);
+}
+body:has(header.header) .nav { border-top-color:#e8dfd2; }
+body:has(header.header) .nav a:hover,body:has(header.header) .main-nav a:hover { color:#a92332; }
+body:has(header.header) .btn-primary,body:has(header.header) .btn-accent,
+body:has(header.header) .cart-checkout,body:has(header.header) [data-pay] {
+  background:#a92332; border-color:#a92332;
+}
+body:has(header.header) .btn-primary:hover,body:has(header.header) [data-pay]:hover {
+  background:#8d1d2a; border-color:#8d1d2a;
+}
+body:has(header.header) .section-head .eyebrow { color:#176b4d; }
+body:has(header.header) .card:hover { border-color:#d9c69e; }
+body:has(header.header) .badge-offer,body:has(header.header) .tag-out { background:#a92332; }
+body:has(header.header) .footer { border-top:3px solid #b99245; }
+body:has(header.header) .wa { background:#176b4d; box-shadow:0 8px 24px rgb(23 107 77 / 28%); }
+body:has(.admin-layout) .admin-sidebar { border-top:3px solid #b99245; }
+html[data-theme="dark"] body:has(header.header) .header { border-bottom-color:#78663e; }
+html[data-theme="dark"] body:has(header.header) .nav { border-top-color:#39443e; }
+html[data-theme="dark"] body:has(header.header) .section-head .eyebrow { color:#8dd0ad; }
+html[data-theme="dark"] body:has(header.header) .card:hover { border-color:#78663e; }
+html[data-theme="dark"] body:has(header.header) .btn-primary,
+html[data-theme="dark"] body:has(header.header) [data-pay] { background:#b52d3b; border-color:#b52d3b; color:#fff; }
+@media(prefers-reduced-motion:reduce){.holiday-sparkle{display:none}}
