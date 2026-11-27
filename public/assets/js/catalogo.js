@@ -127,8 +127,10 @@ async function main() {
   state.maxPrice = Number(priceInput.value);
   $('#f-price-label').textContent = money(state.maxPrice);
 
-  // Build category filter list
+  // Build category filter list, including seasonal categories without products yet.
+  const availableCategories = new Set([...catNames, 'Navidad']);
   const catCounts = new Map();
+  for (const name of availableCategories) catCounts.set(name, catCounts.get(name) || 0);
   for (const name of catNames) catCounts.set(name, (catCounts.get(name) || 0) + 1);
   const sortedCats = [...catCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'es'));
 
