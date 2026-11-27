@@ -32,7 +32,7 @@
   window.addEventListener('scroll', updateProgress, { passive: true });
   window.addEventListener('resize', updateProgress, { passive: true });
 
-  const revealSelector = '.section, .promo-banner, .discovery-ribbon, .product, .catalog > aside, .catalog > main, .cart, .checkout-card, .summary-card, .card, .cat-card, .offer-main, .offer-small, .service-card, .trust-item, .admin-sidebar, .admin-page-heading, .admin-stat, .product-section, .orders-section, .toolbar, .table-card, .login-card, .login-header, .login-main, .account-aside, .account-panel';
+  const revealSelector = '.section, .promo-banner, .home-hero__copy, .home-hero__product, .discovery-ribbon, .product, .catalog > aside, .catalog > main, .cart, .checkout-card, .summary-card, .card, .cat-card, .offer-main, .offer-small, .service-card, .trust-item, .admin-sidebar, .admin-page-heading, .admin-stat, .product-section, .orders-section, .toolbar, .table-card, .login-card, .login-header, .login-main, .account-aside, .account-panel';
   const observed = new WeakSet();
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
