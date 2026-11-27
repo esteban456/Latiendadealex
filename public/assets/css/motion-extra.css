@@ -3,8 +3,8 @@ html { scroll-padding-top: 96px; }
 
 @media (prefers-reduced-motion: no-preference) {
   .header.is-scrolled { border-color: rgb(23 33 43 / 10%); }
-  .link-more { transition: transform .22s ease, color .22s ease; }
-  .link-more:hover { transform: translateX(5px); }
+  .link-more { transition: transform .32s cubic-bezier(.22, 1, .36, 1), color .32s ease; }
+  .link-more:hover { transform: translateX(2px); }
   .card, .cat-card, .service-card, .offer-main, .offer-small, .admin-stat {
     transform-origin: center bottom;
   }
@@ -13,6 +13,6 @@ html { scroll-padding-top: 96px; }
     outline: 2px solid rgb(237 108 48 / 55%);
     outline-offset: 3px;
   }
-  .image-gallery-item:hover img { transform: scale(1.06); }
-  .product-thumb:hover { transform: scale(1.08); }
+  .image-gallery-item:hover img { transform: scale(1.025); }
+  .product-thumb:hover { transform: scale(1.035); }
 }
