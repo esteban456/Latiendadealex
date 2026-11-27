@@ -32,19 +32,6 @@
   window.addEventListener('scroll', updateProgress, { passive: true });
   window.addEventListener('resize', updateProgress, { passive: true });
 
-  // Pequeña onda al pulsar botones y controles.
-  document.addEventListener('pointerdown', (event) => {
-    const button = event.target.closest?.('.btn, .button, .icon-btn, .chip, .view-btn, .hamburger, .account-submit, .provider-button, .small-button, .qty button');
-    if (!button || button.disabled) return;
-    const rect = button.getBoundingClientRect();
-    const ripple = document.createElement('span');
-    ripple.className = 'alx-ripple';
-    ripple.style.left = `${event.clientX - rect.left}px`;
-    ripple.style.top = `${event.clientY - rect.top}px`;
-    button.appendChild(ripple);
-    ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
-  });
-
   const revealSelector = '.section, .promo-banner, .discovery-ribbon, .product, .catalog > aside, .catalog > main, .cart, .checkout-card, .summary-card, .card, .cat-card, .offer-main, .offer-small, .service-card, .trust-item, .admin-sidebar, .admin-page-heading, .admin-stat, .product-section, .orders-section, .toolbar, .table-card, .login-card, .login-header, .login-main, .account-aside, .account-panel';
   const observed = new WeakSet();
   const observer = new IntersectionObserver((entries) => {
@@ -59,7 +46,7 @@
     if (observed.has(element)) return;
     observed.add(element);
     element.classList.add('motion-reveal');
-    element.style.setProperty('--motion-delay', `${Math.min(index, 7) * 70}ms`);
+    element.style.setProperty('--motion-delay', `${Math.min(index, 7) * 55}ms`);
     observer.observe(element);
   }
 
