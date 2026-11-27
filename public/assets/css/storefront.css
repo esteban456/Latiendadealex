@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 5800)
-Total output lines: 400
-
 /* Storefront skin inspired by the supplied Shopify reference. */
 body:has(header.header) {
   --ink: #171717;
@@ -676,3 +673,94 @@ html[data-theme="dark"] body:has(header.header) .card-media[data-image-backgroun
 body:has(header.header) .card-media[data-image-background^="phone-"],body:has(header.header) .product .gallery[data-image-background^="phone-"]{background:#f5f7f8!important;background-image:none!important}
 body:has(header.header) .card-media[data-image-background^="phone-"] img,body:has(header.header) .product .gallery[data-image-background^="phone-"]>#main-image{mix-blend-mode:normal;background:transparent!important}
 html[data-theme="dark"] body:has(header.header) .card-media[data-image-background^="phone-"],html[data-theme="dark"] body:has(header.header) .product .gallery[data-image-background^="phone-"]{background:#202d35!important;background-image:none!important}
+
+/* Contraste uniforme para los temas claro y oscuro en todas las páginas. */
+:root {
+  --contrast-text: #202a30;
+  --contrast-muted: #53616a;
+  --contrast-surface: #ffffff;
+  --contrast-border: #cbd4d9;
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --contrast-text: #f2f5f7;
+  --contrast-muted: #c0cbd1;
+  --contrast-surface: #1b252c;
+  --contrast-border: #46545d;
+}
+body { color: var(--contrast-text); }
+input, select, textarea {
+  color: var(--contrast-text);
+  border-color: var(--contrast-border);
+}
+input::placeholder, textarea::placeholder { color: var(--contrast-muted); opacity: 1; }
+:focus-visible { outline-color: #b42332; }
+html[data-theme="dark"] :focus-visible { outline-color: #ff8b96; }
+html[data-theme="dark"] body {
+  background-color: #11181d;
+  color: var(--contrast-text);
+}
+html[data-theme="dark"] body:not(:has(header.header)) {
+  background-color: #11181d;
+  color: var(--contrast-text);
+}
+html[data-theme="dark"] body:has(header.header) .section-head p,
+html[data-theme="dark"] body:has(header.header) .breadcrumb,
+html[data-theme="dark"] body:has(header.header) .muted,
+html[data-theme="dark"] body:has(header.header) .card-brand,
+html[data-theme="dark"] body:has(header.header) .card-stock,
+html[data-theme="dark"] body:has(header.header) .product p,
+html[data-theme="dark"] body:has(header.header) .filter-item,
+html[data-theme="dark"] body:has(header.header) .chip,
+html[data-theme="dark"] body:has(header.header) .toolbar,
+html[data-theme="dark"] body:has(header.header) .cart-line,
+html[data-theme="dark"] body:has(header.header) .summary-card,
+html[data-theme="dark"] body:has(header.header) .checkout-card,
+html[data-theme="dark"] body:has(header.header) .panel { color: #d5dfe4; }
+html[data-theme="dark"] body:has(header.header) .card-name,
+html[data-theme="dark"] body:has(header.header) .cat-card b,
+html[data-theme="dark"] body:has(header.header) .cat-card span,
+html[data-theme="dark"] body:has(header.header) .product h1,
+html[data-theme="dark"] body:has(header.header) .section-head h2,
+html[data-theme="dark"] body:has(header.header) .filters h3,
+html[data-theme="dark"] body:has(header.header) .filters h4,
+html[data-theme="dark"] body:has(header.header) .summary-card h2,
+html[data-theme="dark"] body:has(header.header) .checkout-card h2 { color: #f4f7f8; }
+html[data-theme="dark"] body:has(header.header) .card,
+html[data-theme="dark"] body:has(header.header) .filters,
+html[data-theme="dark"] body:has(header.header) .toolbar,
+html[data-theme="dark"] body:has(header.header) .panel,
+html[data-theme="dark"] body:has(header.header) .summary-card,
+html[data-theme="dark"] body:has(header.header) .checkout-card,
+html[data-theme="dark"] body:has(header.header) .feature,
+html[data-theme="dark"] body:has(header.header) .variant,
+html[data-theme="dark"] body:has(header.header) .accordion details {
+  background-color: #1b252c;
+  border-color: #46545d;
+}
+html[data-theme="dark"] body:has(header.header) input,
+html[data-theme="dark"] body:has(header.header) select,
+html[data-theme="dark"] body:has(header.header) textarea {
+  background-color: #172129;
+  color: #f4f7f8;
+  border-color: #52616a;
+}
+html[data-theme="dark"] body:not(:has(header.header)) :is(p, label, small, li, td, th, .muted, .help-text, .description) {
+  color: #d5dfe4;
+}
+html[data-theme="dark"] body:not(:has(header.header)) :is(h1,h2,h3,h4) { color: #f4f7f8; }
+html[data-theme="dark"] body:not(:has(header.header)) :is(input,select,textarea) {
+  background-color: #172129;
+  color: #f4f7f8;
+  border-color: #52616a;
+}
+html[data-theme="dark"] body:not(:has(header.header)) :is(.card,.panel,.modal,.modal-content,.admin-card,.stat-card,.tab-panel) {
+  background-color: #1b252c;
+  color: #edf2f4;
+  border-color: #46545d;
+}
+@media (prefers-contrast: more) {
+  :root { --contrast-muted: #3f4b52; --contrast-border: #87949b; }
+  html[data-theme="dark"] { --contrast-muted: #e0e7ea; --contrast-border: #89969d; }
+  a, button, input, select, textarea { outline-offset: 3px; }
+}
