@@ -1,14 +1,6 @@
 /* Movimiento uniforme para toda La Tienda de Alex. */
-@keyframes alx-progress-glow {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.35); }
-}
-@keyframes alx-ripple {
-  from { transform: scale(0); opacity: .34; }
-  to { transform: scale(4); opacity: 0; }
-}
 @keyframes alx-modal-in {
-  from { opacity: 0; transform: translateY(22px) scale(.975); }
+  from { opacity: 0; transform: translateY(12px) scale(.99); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
@@ -21,96 +13,74 @@
   transform: scaleX(0);
   transform-origin: left center;
   background: linear-gradient(90deg, #f6a623, #ed6c30 55%, #d84c68);
-  box-shadow: 0 0 12px rgb(237 108 48 / 42%);
+  box-shadow: none;
   pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .motion-reveal {
     opacity: 0;
-    transform: translate3d(0, 34px, 0) scale(.975);
-    filter: blur(4px);
-    transition: opacity .62s ease var(--motion-delay, 0ms),
-                transform .76s cubic-bezier(.18, .82, .22, 1) var(--motion-delay, 0ms),
-                filter .68s ease var(--motion-delay, 0ms);
-    will-change: opacity, transform, filter;
+    transform: translate3d(0, 18px, 0) scale(.99);
+    transition: opacity .68s cubic-bezier(.22, 1, .36, 1) var(--motion-delay, 0ms),
+                transform .82s cubic-bezier(.22, 1, .36, 1) var(--motion-delay, 0ms);
+    will-change: opacity, transform;
   }
   .motion-reveal.is-visible {
     opacity: 1;
     transform: none;
-    filter: none;
     will-change: auto;
   }
-
-  .alx-progress { animation: alx-progress-glow 2.8s ease-in-out infinite; }
 
   .card, .cat-card, .service-card, .offer-main, .offer-small,
   .admin-stat, .login-card, .account-panel, .account-aside,
   .table-card, .product-thumb {
-    transition: transform .28s cubic-bezier(.2, .7, .2, 1),
-                box-shadow .28s ease, border-color .28s ease;
+    transition: transform .38s cubic-bezier(.22, 1, .36, 1),
+                box-shadow .38s ease, border-color .38s ease;
   }
   .card:hover, .cat-card:hover, .service-card:hover,
   .offer-main:hover, .offer-small:hover, .admin-stat:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 16px 36px rgb(23 33 43 / 12%);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgb(23 33 43 / 9%);
   }
   .card-media img, .cat-card img, .product-thumb, .image-preview,
   .image-gallery-item img {
-    transition: transform .45s cubic-bezier(.2, .75, .25, 1);
+    transition: transform .6s cubic-bezier(.22, 1, .36, 1);
   }
-  .card:hover .card-media img, .cat-card:hover img { transform: scale(1.075); }
+  .card:hover .card-media img, .cat-card:hover img { transform: scale(1.035); }
 
   .btn, .button, .icon-btn, .chip, .view-btn, .hamburger,
   .account-submit, .provider-button, .account-tab, .small-button,
   .upload-label, .qty button, .close {
-    transition: transform .2s cubic-bezier(.2, .75, .25, 1),
-                box-shadow .22s ease, background-color .22s ease,
-                border-color .22s ease, color .22s ease;
+    transition: transform .28s cubic-bezier(.22, 1, .36, 1),
+                box-shadow .28s ease, background-color .28s ease,
+                border-color .28s ease, color .28s ease;
   }
   .btn:hover, .button:hover, .icon-btn:hover, .chip:hover,
   .view-btn:hover, .account-submit:hover, .provider-button:hover,
   .account-tab:hover, .small-button:hover, .upload-label:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgb(23 33 43 / 13%);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgb(23 33 43 / 9%);
   }
   .btn:active, .button:active, .icon-btn:active, .account-submit:active,
   .small-button:active, .qty button:active {
-    transform: translateY(1px) scale(.975);
+    transform: scale(.985);
     box-shadow: none;
   }
 
   .header, .topbar, .login-header {
-    transition: box-shadow .3s ease, background-color .3s ease, border-color .3s ease;
+    transition: box-shadow .4s ease, background-color .4s ease, border-color .4s ease;
   }
-  .header.is-scrolled { box-shadow: 0 12px 32px rgb(23 33 43 / 13%); }
+  .header.is-scrolled { box-shadow: 0 8px 24px rgb(23 33 43 / 9%); }
 
   .product .gallery, .image-gallery-item, .product-image-wrap {
-    transition: transform .35s ease, box-shadow .35s ease;
+    transition: transform .5s cubic-bezier(.22, 1, .36, 1), box-shadow .5s ease;
   }
-  .product .gallery:hover, .image-gallery-item:hover { box-shadow: 0 16px 38px rgb(23 33 43 / 12%); }
+  .product .gallery:hover, .image-gallery-item:hover { box-shadow: 0 12px 28px rgb(23 33 43 / 9%); }
   input, textarea, select {
     transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
   }
 
-  .modal:not([hidden]) .modal-card { animation: alx-modal-in .36s cubic-bezier(.2, .8, .2, 1) both; }
-
-  .btn, .button, .icon-btn, .chip, .view-btn, .hamburger,
-  .account-submit, .provider-button, .small-button, .qty button {
-    position: relative;
-    overflow: hidden;
-  }
-  .alx-ripple {
-    position: absolute;
-    z-index: 2;
-    width: 18px;
-    height: 18px;
-    margin: -9px 0 0 -9px;
-    border-radius: 50%;
-    background: currentColor;
-    pointer-events: none;
-    animation: alx-ripple .62s ease-out forwards;
-  }
+  .modal:not([hidden]) .modal-card { animation: alx-modal-in .42s cubic-bezier(.22, 1, .36, 1) both; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -120,6 +90,5 @@
     animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
   }
-  .motion-reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
-  .alx-progress { animation: none !important; }
+  .motion-reveal { opacity: 1 !important; transform: none !important; }
 }
