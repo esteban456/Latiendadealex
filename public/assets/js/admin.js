@@ -1,4 +1,5 @@
 const $ = (selector) => document.querySelector(selector);
+const categoryOptions = ['Navidad'];
 const state = { csrf: '', offset: 0, limit: 50, total: 0, search: '', category: '', stock: '', categories: [], uploadingImage: false };
 let productImages = [];
 const authView = $('#admin-login-view');
@@ -223,7 +224,7 @@ function showEditor(product = null) {
   $('#image-preview').hidden = !productImages[0];
   $('#image-file').value = '';
   renderProductImageGallery();
-  $('#category-options').innerHTML = state.categories.map((category) => `<option value="${escapeHtml(category.name)}"></option>`).join('');
+  $('#category-options').innerHTML = [...new Map([...state.categories.map((category) => category.name), ...categoryOptions].map((name) => [name.toLocaleLowerCase('es'), name])).values()].map((name) => `<option value="${escapeHtml(name)}"></option>`).join('');
   editor.hidden = false;
   document.body.classList.add('modal-open');
   $('#field-name').focus();
