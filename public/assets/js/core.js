@@ -277,6 +277,18 @@ export function bindAddButtons(catalog) {
     const variant = variantFromProduct(product);
     const quantity = button.closest('.card')?.querySelector('[data-card-qty]');
     addToCart(product, variant, Math.max(1, Math.min(99, Number(quantity?.value) || 1)));
+
+    // Confirmar visualmente la acción y restaurar el botón sin cambiar el layout.
+    if (button._addedTimer) clearTimeout(button._addedTimer);
+    button.classList.add('is-added');
+    button.textContent = 'Agregado ✓';
+    button.disabled = true;
+    button._addedTimer = setTimeout(() => {
+      button.classList.remove('is-added');
+      button.textContent = 'Agregar al carrito';
+      button.disabled = false;
+      button._addedTimer = null;
+    }, 1300);
   });
 }
 
