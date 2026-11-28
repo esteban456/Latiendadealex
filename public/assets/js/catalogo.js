@@ -144,33 +144,51 @@ async function main() {
     )
     .join('');
 
-  // Subcategorías de Sonido por marca. "Todo" conserva la categoría padre.
-  const soundSubcategories = ['Todo', 'JBL', 'FOL', 'TCL', 'KALLEY', 'XIAOMI', 'BOSE', 'harman kardon', 'OTROS'];
-  const isSoundCategory = normalize(state.category) === 'sonido';
-  const soundBrands = new Set(soundSubcategories.slice(1).map(normalize));
-  const soundBrandProducts = products.filter((product) => normalize((product.categories || []).map((c) => c.name).join(' ')).includes('sonido'));
-  const subcategoryBrands = new Set(soundBrandProducts.map((product) => product.brand).filter(Boolean));
-  const soundOptions = soundSubcategories.slice(1).filter((label) =>
-    label === 'OTROS'
-      ? [...subcategoryBrands].some((brand) => !soundBrands.has(normalize(brand)))
-      : [...subcategoryBrands].some((brand) => normalize(brand) === normalize(label))
+  // Subcategorías de navegación por categoría principal.
+  const subcategories = {
+    'tu tv': ['TELEVISORES', 'Decodificadores y ONN para tu TV!', 'Base Televisor', 'MONITORES'],
+    'smartwatch': ['REDMI', 'XIAOMI', 'APPLE WATCH', 'HUAWEI', 'KALLEY', 'SMARTWATCH'],
+    'hogar': ['LAVADORAS', 'AIRE ACONDICIONADO', 'VENTILADORES', 'ASPIRADORAS', 'ENCHUFES', 'TIMBRES', 'SEGURIDAD', 'PORTARETRATOS', 'ADAPTADORES ROCETAS', 'ALMUHADAS', 'PLANCHAS'],
+    'tablets': ['IPAD', 'LENOVO', 'SAMSUNG', 'KRONO', 'INFINIX', 'HUAWEI', 'TECNO', 'TABLETS'],
+    'cocina': ['Neveras', 'Ollas a Presión', 'Ollas Arroceras', 'Sartenes', 'SET de cubiertos', 'Sanducheras', 'Asadores', 'Cafeteras', 'CUCHILLOS', 'Recipientes herméticos', 'Termos', 'Parrilla para Arepas', 'PURIFICADORES', 'DISPENSADORES', 'SET DE OLLAS', 'OLLAS MULTIDUNCIONAL', 'VAJILLAS', 'MOLINOS Y PROCESADORES', 'BASCULAS Y GRAMERAS', 'HORNOS TOSTADORES', 'MICROONDAS', 'EXPRIMIDORES Y EXTRACTORES', 'BATIDORAS', 'WAFFLERAS', 'PRENSAS', 'LONCHERAS', 'LICUADORAS', 'REFRACTARIAS', 'CHOCOLATERAS', 'FREIDORA', 'HERVIDORES'],
+    'cargadores y power bank': ['CARGADORES', 'CABLES', 'POWER BANK'],
+    'camara y tripodes': ['Camara', 'Tripodes'],
+    'audio y microfonos': ['MICROFONO CELULAR', 'MICROFONO PARLANTE'],
+    'consolas y videojuegos': ['XBOX', 'PLAYSTATION', 'CONSOLAS RETRO', 'CONTROLES', 'CARGADORES', 'CABLES Y CONECTORES'],
+    'impresoras': ['EPSON', 'IMPRESORAS PORTATILES', 'ROLLOS Y PAPEL FOTOGRÁFICO'],
+    'portatiles y monitores': ['MONITORES', 'HP', 'LENOVO', 'MAC', 'ACER', 'DELL'],
+    'proyectores': ['PROYECTORES', 'TELONES', 'APUNTADORES'],
+    'accesorios computador': ['MOUSE', 'ROUTERS', 'TECLADOS', 'CAMARA PC'],
+    'credito android': ['SAMSUNG', 'ZTE', 'REDMI', 'OPPO', 'TECNO', 'INFINIX', 'MOTOROLA', 'HONOR'],
+    'celulares': ['SAMSUNG', 'APPLE', 'REDMI', 'MOTOROLA', 'INFINIX', 'HONOR', 'OPPO', 'POCO', 'TECNO', 'XIAOMI', 'ZTE', 'REALME', 'KALLEY', 'ULEFONE', 'ALCATEL', 'TCL', 'VIVO', 'FLECHAS / ROMPEMUROS'],
+    'sonido': ['JBL', 'FOL', 'TCL', 'KALLEY', 'XIAOMI', 'BOSE', 'harman kardon', 'OTROS'],
+  };
+  const selectedCategory = normalize(state.category);
+  const subcategoryKey = Object.keys(subcategories).find((key) => selectedCategory.includes(normalize(key)));
+  const subcategoryOptions = subcategoryKey ? subcategories[subcategoryKey] : [];
+  const categoryProducts = products.filter((product) =>
+    (product.categories || []).some((category) => normalize(category.name).includes(subcategoryKey || '\\u0000'))
   );
+  const categoryBrands = new Set(categoryProducts.map((product) => product.brand).filter(Boolean));
+  const visibleSubcategories = subcategoryOptions.filter((label) => label === 'OTROS'
+    ? [...categoryBrands].some((brand) => !subcategoryOptions.some((known) => normalize(known) === normalize(brand)))
+    : [...categoryBrands].some((brand) => normalize(brand) === normalize(label)));
 
-  // Build brand filter list; Sonido muestra sus marcas como subcategorías.
-  const visibleBrands = isSoundCategory ? soundOptions : brands;
-  $('[data-filter-brands]').innerHTML = isSoundCategory
-    ? `<button type="button" class="filter-item ${state.brand ? '' : 'active'}" data-brand-choice="">Todo <span class="count">${soundBrandProducts.length}</span></button>` +
-      visibleBrands.map((label) => {
-        const matched = label === 'OTROS'
-          ? soundBrandProducts.filter((product) => !soundBrands.has(normalize(product.brand || ''))).length
-          : soundBrandProducts.filter((product) => normalize(product.brand) === normalize(label)).length;
-        return `<button type="button" class="filter-item ${normalize(state.brand) === normalize(label) ? 'active' : ''}" data-brand-choice="${escapeHtml(label)}">${escapeHtml(label)} <span class="count">${matched}</span></button>`;
+  // El filtro de marca funciona como subcategoría; Todo conserva solo la categoría principal.
+  $('[data-filter-brands]').innerHTML = subcategoryKey
+    ? `<button type="button" class="filter-item ${state.brand ? '' : 'active'}" data-brand-choice="">Todo <span class="count">${categoryProducts.length}</span></button>` +
+      visibleSubcategories.map((label) => {
+        const count = label === 'OTROS'
+          ? categoryProducts.filter((product) => !subcategoryOptions.some((known) => normalize(known) === normalize(product.brand || ''))).length
+          : categoryProducts.filter((product) => normalize(product.brand) === normalize(label)).length;
+        return `<button type="button" class="filter-item ${normalize(state.brand) === normalize(label) ? 'active' : ''}" data-brand-choice="${escapeHtml(label)}">${escapeHtml(label)} <span class="count">${count}</span></button>`;
       }).join('')
-    : brands.map((b) => `
-      <label class="filter-item ${state.brand === b ? 'active' : ''}">
-        <input type="checkbox" data-brand="${escapeHtml(b)}" ${state.brand === b ? 'checked' : ''} />
-        <span>${escapeHtml(b)}</span>
+    : brands.map((brand) => `
+      <label class="filter-item ${state.brand === brand ? 'active' : ''}">
+        <input type="checkbox" data-brand="${escapeHtml(brand)}" ${state.brand === brand ? 'checked' : ''} />
+        <span>${escapeHtml(brand)}</span>
       </label>`).join('');
+
 
   const grid = $('[data-results]');
   grid.innerHTML = Array.from({ length: 8 }, () => '<div class="skeleton"></div>').join('');
