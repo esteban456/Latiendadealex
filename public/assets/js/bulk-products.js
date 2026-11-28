@@ -119,7 +119,7 @@
     $('#bulk-products-summary').textContent = rows.length
       ? `${rows.length} filas detectadas; ${valid.length} listas para importar.`
       : 'Aún no has seleccionado un archivo.';
-    preview.innerHTML = rows.slice(0, 100).map((item, index) => {
+    preview.innerHTML = rows.map((item, index) => {
       const ok = item.name && item.category && (item.cost > 0 || item.price > 0 || item.discountPrice > 0);
       const reason = ok ? 'Lista' : (!item.name ? 'Falta nombre' : !item.category ? 'Falta categoría' : 'Precio inválido');
       return `<tr><td>${index + 2}</td><td>${escapeHtml(item.name)}</td><td>${escapeHtml(item.category)}</td><td>${item.cost ? item.cost.toLocaleString('es-CO') : '—'}</td><td>${item.stock}</td><td class="${ok ? '' : 'danger-text'}">${reason}</td></tr>`;
@@ -146,8 +146,8 @@
     try {
       if (file.size > 2_000_000) throw new Error('El archivo no puede superar 2 MB.');
       const records = await readFile(file);
-      rows = records.map(toProduct).slice(0, 100);
-      if (records.length > 100) message('Solo se tomarán las primeras 100 filas.', 'error');
+      rows = records.map(toProduct);
+      if (records.length > 100) message(`Se detectaron ${records.length} filas; se importarán en una sola operación.`, '');
       render();
     } catch (error) {
       rows = []; render(); message(error.message || 'No se pudo leer el archivo.', 'error');
