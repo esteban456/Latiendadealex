@@ -703,3 +703,17 @@ $('#field-image').addEventListener('input', () => {
 });
 
 openPanel();
+
+$('#delete-all-products')?.addEventListener('click', async () => {
+  if (!confirm('¿Seguro que quieres borrar TODOS los productos del catálogo? Esta acción no se puede deshacer.')) return;
+  if (!confirm('Confirmación final: se eliminarán todos los productos. ¿Continuar?')) return;
+  const button = $('#delete-all-products');
+  button.disabled = true;
+  try {
+    const result = await request('/api/admin/products/all', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ csrf: state.csrf, confirm: 'DELETE_ALL_PRODUCTS' }) });
+    notice(`Se eliminaron ${result.deleted} productos.`, 'success');
+    state.offset = 0;
+    await loadProducts();
+  } catch (error) { notice(error.message, 'error'); }
+  finally { button.disabled = false; }
+});
