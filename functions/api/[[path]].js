@@ -335,6 +335,13 @@ async function adminApi(request, url, env) {
     }
   }
   if (request.method === 'DELETE' && url.pathname === '/api/admin/products') return adminDelete(env.DB, body.id);
+  if (request.method === 'DELETE' && url.pathname === '/api/admin/products/all') {
+    if (body.confirm !== 'DELETE_ALL_PRODUCTS') return json({ error: 'Confirmación inválida.' }, 400);
+    const count = await env.DB.prepare('SELECT COUNT(*) AS total FROM products').first();
+    await env.DB.prepare('DELETE FROM products').run();
+    await refreshCatalogMeta(env.DB);
+    return json({ ok: true, deleted: Number(count?.total || 0) });
+  }
   if (request.method === 'POST' && url.pathname === '/api/admin/upload') return uploadImage(env, body);
   return json({ error: 'Ruta de administración no encontrada.' }, 404);
 }
