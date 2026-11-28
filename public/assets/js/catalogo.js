@@ -144,16 +144,33 @@ async function main() {
     )
     .join('');
 
-  // Build brand filter list
-  $('[data-filter-brands]').innerHTML = brands
-    .map(
-      (b) => `
+  // Subcategorías de Sonido por marca. "Todo" conserva la categoría padre.
+  const soundSubcategories = ['Todo', 'JBL', 'FOL', 'TCL', 'KALLEY', 'XIAOMI', 'BOSE', 'harman kardon', 'OTROS'];
+  const isSoundCategory = normalize(state.category) === 'sonido';
+  const soundBrands = new Set(soundSubcategories.slice(1).map(normalize));
+  const soundBrandProducts = products.filter((product) => normalize((product.categories || []).map((c) => c.name).join(' ')).includes('sonido'));
+  const subcategoryBrands = new Set(soundBrandProducts.map((product) => product.brand).filter(Boolean));
+  const soundOptions = soundSubcategories.slice(1).filter((label) =>
+    label === 'OTROS'
+      ? [...subcategoryBrands].some((brand) => !soundBrands.has(normalize(brand)))
+      : [...subcategoryBrands].some((brand) => normalize(brand) === normalize(label))
+  );
+
+  // Build brand filter list; Sonido muestra sus marcas como subcategorías.
+  const visibleBrands = isSoundCategory ? soundOptions : brands;
+  $('[data-filter-brands]').innerHTML = isSoundCategory
+    ? `<button type="button" class="filter-item ${state.brand ? '' : 'active'}" data-brand-choice="">Todo <span class="count">${soundBrandProducts.length}</span></button>` +
+      visibleBrands.map((label) => {
+        const matched = label === 'OTROS'
+          ? soundBrandProducts.filter((product) => !soundBrands.has(normalize(product.brand || ''))).length
+          : soundBrandProducts.filter((product) => normalize(product.brand) === normalize(label)).length;
+        return `<button type="button" class="filter-item ${normalize(state.brand) === normalize(label) ? 'active' : ''}" data-brand-choice="${escapeHtml(label)}">${escapeHtml(label)} <span class="count">${matched}</span></button>`;
+      }).join('')
+    : brands.map((b) => `
       <label class="filter-item ${state.brand === b ? 'active' : ''}">
         <input type="checkbox" data-brand="${escapeHtml(b)}" ${state.brand === b ? 'checked' : ''} />
         <span>${escapeHtml(b)}</span>
-      </label>`,
-    )
-    .join('');
+      </label>`).join('');
 
   const grid = $('[data-results]');
   grid.innerHTML = Array.from({ length: 8 }, () => '<div class="skeleton"></div>').join('');
@@ -261,7 +278,14 @@ async function main() {
     });
   });
 
-  // Brand filter
+  // Brand/subcategory filter
+  $('[data-filter-brands]').addEventListener('click', (event) => {
+    const choice = event.target.closest('[data-brand-choice]');
+    if (choice) {
+      update({ brand: choice.dataset.brandChoice });
+      return;
+    }
+  });
   $('[data-filter-brands]').addEventListener('change', (event) => {
     const checkbox = event.target.closest('[data-brand]');
     if (!checkbox) return;
